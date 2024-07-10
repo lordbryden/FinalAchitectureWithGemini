@@ -1,0 +1,7 @@
+{
+  "name": "NewGemini",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
