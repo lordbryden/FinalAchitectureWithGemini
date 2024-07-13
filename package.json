@@ -28,7 +28,9 @@
     "@capacitor/status-bar": "6.0.0",
     "@ionic/angular": "^8.0.0",
     "ionicons": "^7.0.0",
+    "konva": "^9.3.13",
     "rxjs": "~7.8.0",
+    "three": "^0.166.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },
@@ -45,6 +47,7 @@
     "@capacitor/cli": "6.1.0",
     "@ionic/angular-toolkit": "^11.0.1",
     "@types/jasmine": "~5.1.0",
+    "@types/three": "^0.166.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.57.0",
