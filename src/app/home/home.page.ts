@@ -9,96 +9,141 @@ import Konva from 'konva';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: 'home.page.html',
-    styleUrls: ['home.page.scss'],
-  })
-  export class HomePage {
-    @ViewChild('container', { static: true }) containerRef!: ElementRef;
-    @ViewChild('threeContainer', { static: true }) threeContainerRef!: ElementRef;
-    private stage!: Konva.Stage;
-    private scene!: THREE.Scene;
-    private camera!: THREE.PerspectiveCamera;
-    private renderer!: THREE.WebGLRenderer;
-    private controls!: OrbitControls;
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+})
+export class HomePage {
+  @ViewChild('container', { static: true }) containerRef!: ElementRef;
+  @ViewChild('threeContainer', { static: true }) threeContainerRef!: ElementRef;
+  private stage!: Konva.Stage;
+  private scene!: THREE.Scene;
+  private camera!: THREE.PerspectiveCamera;
+  private renderer!: THREE.WebGLRenderer;
+  private controls!: OrbitControls;
 
-    currentMode: 'wall' | 'window' | 'door' | 'select' | null = null;
+  currentMode: 'wall' | 'window' | 'door' | 'select' | null = null;
 
-    segments = [
-      { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 1000, angle: 0 },
-      { start: 'A2', end: 'A3', name: 'Parlor Door', type: 'door', length: 500, angle: 0 },
-      { start: 'A3', end: 'A4', name: 'External Wall 2 ', type: 'wall', length: 3000, angle: 0 },
-      { start: 'A1', end: 'A6', name: 'External Wall 3 ', type: 'wall', length: 3000, angle: 90 },
-      { start: 'A2', end: 'A7', name: 'External Wall 3 ', type: 'wall', length: 3000, angle: 270 },
-      { start: 'A4', end: 'A8', name: 'Window ', type: 'window', length: 3000, angle: 90 },
+  segments = [
+    {
+      start: 'A1',
+      end: 'A2',
+      name: 'External wall 1',
+      type: 'wall',
+      length: 1000,
+      angle: 0,
+    },
+    {
+      start: 'A2',
+      end: 'A3',
+      name: 'Parlor Door',
+      type: 'door',
+      length: 500,
+      angle: 0,
+    },
+    {
+      start: 'A3',
+      end: 'A4',
+      name: 'External Wall 2 ',
+      type: 'wall',
+      length: 3000,
+      angle: 0,
+    },
+    {
+      start: 'A1',
+      end: 'A6',
+      name: 'External Wall 3 ',
+      type: 'wall',
+      length: 3000,
+      angle: 90,
+    },
+    {
+      start: 'A2',
+      end: 'A7',
+      name: 'External Wall 3 ',
+      type: 'wall',
+      length: 3000,
+      angle: 270,
+    },
+    {
+      start: 'A4',
+      end: 'A8',
+      name: 'Window ',
+      type: 'window',
+      length: 3000,
+      angle: 90,
+    },
+  ];
 
-    ];
+  constructor(
+    private gridService: GridService,
+    private drawingService: DrawingService,
+    private autoDrawService: AutoDrawService
+  ) {}
 
-    constructor(
-      private gridService: GridService,
-      private drawingService: DrawingService,
-      private autoDrawService: AutoDrawService
+  ngOnInit() {
+    this.initializeStage();
+    this.gridService.createGrid(this.stage);
+    this.drawingService.setStage(this.stage);
+    this.setupEventListeners();
+    this.initializeThreeJS();
+  }
 
-    ) {}
+  initializeStage() {
+    this.stage = new Konva.Stage({
+      container: this.containerRef.nativeElement,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }
 
-    ngOnInit() {
-      this.initializeStage();
-      this.gridService.createGrid(this.stage);
-      this.drawingService.setStage(this.stage);
-      this.setupEventListeners();
-      this.initializeThreeJS();
-    }
+  initializeThreeJS() {
+    // Create a scene
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xf0f0f0);
 
-    initializeStage() {
-      this.stage = new Konva.Stage({
-        container: this.containerRef.nativeElement,
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    }
+    // Create a camera
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    this.camera.position.set(0, 5, 10);
 
-    initializeThreeJS() {
-      // Create a scene
-      this.scene = new THREE.Scene();
-      this.scene.background = new THREE.Color(0xf0f0f0);
+    // Create a renderer
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+    this.threeContainerRef.nativeElement.appendChild(this.renderer.domElement);
 
-      // Create a camera
-      this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      this.camera.position.set(0, 5, 10);
+    // Add orbit controls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-      // Create a renderer
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
-      this.threeContainerRef.nativeElement.appendChild(this.renderer.domElement);
+    // Add a grid helper
+    const gridHelper = new THREE.GridHelper(10, 10);
+    this.scene.add(gridHelper);
 
-      // Add orbit controls
-      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    this.scene.add(ambientLight);
 
-      // Add a grid helper
-      const gridHelper = new THREE.GridHelper(10, 10);
-      this.scene.add(gridHelper);
+    // Add directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 1);
+    this.scene.add(directionalLight);
 
-      // Add ambient light
-      const ambientLight = new THREE.AmbientLight(0x404040);
-      this.scene.add(ambientLight);
+    this.animate();
+  }
 
-      // Add directional light
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-      directionalLight.position.set(1, 1, 1);
-      this.scene.add(directionalLight);
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  } // toogle gird call
 
-      this.animate();
-    }
-
-    animate() {
-      requestAnimationFrame(() => this.animate());
-      this.controls.update();
-      this.renderer.render(this.scene, this.camera);
-    }  // toogle gird call
-
-    toggleGrid() {
-      this.gridService.toggleGrid();
-    }
+  toggleGrid() {
+    this.gridService.toggleGrid();
+  }
 
   //draw call
 
@@ -154,173 +199,238 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
       }
     });
   }
-    setMode(mode: 'wall' | 'window' | 'door' | 'select' | null) {
-      this.currentMode = mode;
-      this.drawingService.setMode(mode);
+  setMode(mode: 'wall' | 'window' | 'door' | 'select' | null) {
+    this.currentMode = mode;
+    this.drawingService.setMode(mode);
+  }
+
+  deleteSelected() {
+    this.drawingService.deleteSelectedShapes();
+  }
+
+  drawSquare() {
+    // Draw a square starting at (100, 100) with side length 200
+    this.autoDrawService.drawShape(this.segments); // Start drawing at (100, 100)
+  }
+  toggleDistanceLabels() {
+    this.drawingService.toggleDistanceLabels();
+  }
+
+  convert2DTo3D() {
+    // Clear existing 3D objects
+    while (this.scene.children.length > 0) {
+      this.scene.remove(this.scene.children[0]);
     }
 
-    deleteSelected() {
-      this.drawingService.deleteSelectedShapes();
+    // Re-add grid helper
+    const gridSize = 70;
+    const gridHelper = new THREE.GridHelper(gridSize, gridSize);
+    this.scene.add(gridHelper);
+
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    this.scene.add(ambientLight);
+
+    // Add directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 1);
+    this.scene.add(directionalLight);
+
+    // Get all shapes from DrawingService
+    const shapes = this.drawingService.getAllShapes();
+
+    // Define wall height
+    const wallHeight = 8.5; // 2.5 meters
+    const wallWidth = 0.8;
+
+    if (shapes.length === 0) {
+      return; // No shapes to convert
     }
 
-    drawSquare() {
-      // Draw a square starting at (100, 100) with side length 200
-      this.autoDrawService.drawShape(this.segments); // Start drawing at (100, 100)
-    }
-    toggleDistanceLabels() {
-      this.drawingService.toggleDistanceLabels();
-    }
+    // Find the bounding box of the 2D drawing
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
+    shapes.forEach((shapeInfo) => {
+      if (shapeInfo.shape instanceof Konva.Line) {
+        const points = shapeInfo.shape.points();
+        minX = Math.min(minX, points[0], points[2]);
+        maxX = Math.max(maxX, points[0], points[2]);
+        minY = Math.min(minY, points[1], points[3]);
+        maxY = Math.max(maxY, points[1], points[3]);
+      }
+    });
 
-    convert2DTo3D() {
-      // Clear existing 3D objects
-      while (this.scene.children.length > 0) {
-        this.scene.remove(this.scene.children[0]);
+    // Calculate the dimensions of the 2D drawing
+    const width = maxX - minX;
+    const depth = maxY - minY;
+
+    // If width or depth is zero (single line scenario), set it to a minimum value to avoid division by zero
+    const adjustedWidth = width === 0 ? 1 : width;
+    const adjustedDepth = depth === 0 ? 1 : depth;
+
+    // Calculate scale factors for width and depth separately
+    const scaleFactorX = gridSize / adjustedWidth;
+    const scaleFactorY = gridSize / adjustedDepth;
+
+    // Create and add floor
+    const floorGeometry = new THREE.PlaneGeometry(gridSize, gridSize);
+    const floorMaterial = new THREE.MeshBasicMaterial({
+      color: 0xcccccc,
+      side: THREE.DoubleSide,
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = Math.PI / 2;
+    this.scene.add(floor);
+
+    const doorHeight = 7; // Slightly shorter than walls
+    const windowHeight = 4;
+    const windowElevation = 3;
+    shapes.forEach((shapeInfo) => {
+      let start: THREE.Vector3, end: THREE.Vector3;
+
+      if (shapeInfo.shape instanceof Konva.Line) {
+        const points = shapeInfo.shape.points();
+        start = this.pointToVector3(
+          points[0],
+          points[1],
+          minX,
+          minY,
+          scaleFactorX,
+          scaleFactorY,
+          gridSize
+        );
+        end = this.pointToVector3(
+          points[2],
+          points[3],
+          minX,
+          minY,
+          scaleFactorX,
+          scaleFactorY,
+          gridSize
+        );
+      } else if (shapeInfo.shape instanceof Konva.Group) {
+        start = this.pointToVector3(
+          shapeInfo.startCircle.x(),
+          shapeInfo.startCircle.y(),
+          minX,
+          minY,
+          scaleFactorX,
+          scaleFactorY,
+          gridSize
+        );
+        end = this.pointToVector3(
+          shapeInfo.endCircle.x(),
+          shapeInfo.endCircle.y(),
+          minX,
+          minY,
+          scaleFactorX,
+          scaleFactorY,
+          gridSize
+        );
+      } else {
+        console.warn('Unsupported shape type:', shapeInfo.shape);
+        return;
       }
 
-      // Re-add grid helper
-      const gridSize = 70;
-      const gridHelper = new THREE.GridHelper(gridSize, gridSize);
-      this.scene.add(gridHelper);
-
-      // Add ambient light
-      const ambientLight = new THREE.AmbientLight(0x404040);
-      this.scene.add(ambientLight);
-
-      // Add directional light
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-      directionalLight.position.set(1, 1, 1);
-      this.scene.add(directionalLight);
-
-      // Get all shapes from DrawingService
-      const shapes = this.drawingService.getAllShapes();
-
-      // Define wall height
-      const wallHeight = 8.5; // 2.5 meters
-      const wallWidth = 0.8;
-
-      if (shapes.length === 0) {
-        return; // No shapes to convert
+      switch (this.getShapeType(shapeInfo.shape)) {
+        case 'wall':
+          this.drawWall(start, end, wallHeight, wallWidth);
+          break;
+        case 'door':
+          this.drawDoor(start, end, doorHeight, wallWidth, 0x00ff00); // Green color
+          break;
+        case 'window':
+          this.drawWindow(
+            start,
+            end,
+            windowHeight,
+            wallWidth,
+            windowElevation,
+            0x0000ff
+          ); // Blue color
+          break;
       }
+    });
 
-      // Find the bounding box of the 2D drawing
-      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-      shapes.forEach(shapeInfo => {
-        if (shapeInfo.shape instanceof Konva.Line) {
-          const points = shapeInfo.shape.points();
-          minX = Math.min(minX, points[0], points[2]);
-          maxX = Math.max(maxX, points[0], points[2]);
-          minY = Math.min(minY, points[1], points[3]);
-          maxY = Math.max(maxY, points[1], points[3]);
-        }
-      });
+    // Adjust camera position
+    this.camera.position.set(0, gridSize / 2, gridSize);
+    this.camera.lookAt(0, 0, 0);
 
-      // Calculate the dimensions of the 2D drawing
-      const width = maxX - minX;
-      const depth = maxY - minY;
+    // Update the controls target
+    this.controls.target.set(0, 0, 0);
 
-      // If width or depth is zero (single line scenario), set it to a minimum value to avoid division by zero
-      const adjustedWidth = width === 0 ? 1 : width;
-      const adjustedDepth = depth === 0 ? 1 : depth;
+    // Update the render
+    this.renderer.render(this.scene, this.camera);
+  }
 
-      // Calculate scale factors for width and depth separately
-      const scaleFactorX = gridSize / adjustedWidth;
-      const scaleFactorY = gridSize / adjustedDepth;
+  private pointToVector3(
+    x: number,
+    y: number,
+    minX: number,
+    minY: number,
+    scaleFactorX: number,
+    scaleFactorY: number,
+    gridSize: number
+  ): THREE.Vector3 {
+    return new THREE.Vector3(
+      (x - minX) * scaleFactorX - gridSize / 2,
+      0,
+      (y - minY) * scaleFactorY - gridSize / 2
+    );
+  }
 
-      // Create and add floor
-      const floorGeometry = new THREE.PlaneGeometry(gridSize, gridSize);
-      const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide });
-      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-      floor.rotation.x = Math.PI / 2;
-      this.scene.add(floor);
-
-
-
-  const doorHeight = 7; // Slightly shorter than walls
-  const windowHeight = 4;
-  const windowElevation = 3;
-  shapes.forEach(shapeInfo => {
-    let start: THREE.Vector3, end: THREE.Vector3;
-
-    if (shapeInfo.shape instanceof Konva.Line) {
-      const points = shapeInfo.shape.points();
-      start = this.pointToVector3(points[0], points[1], minX, minY, scaleFactorX, scaleFactorY, gridSize);
-      end = this.pointToVector3(points[2], points[3], minX, minY, scaleFactorX, scaleFactorY, gridSize);
-    } else if (shapeInfo.shape instanceof Konva.Group) {
-      start = this.pointToVector3(shapeInfo.startCircle.x(), shapeInfo.startCircle.y(), minX, minY, scaleFactorX, scaleFactorY, gridSize);
-      end = this.pointToVector3(shapeInfo.endCircle.x(), shapeInfo.endCircle.y(), minX, minY, scaleFactorX, scaleFactorY, gridSize);
-    } else {
-      console.warn('Unsupported shape type:', shapeInfo.shape);
-      return;
-    }
-
-    switch (this.getShapeType(shapeInfo.shape)) {
-      case 'wall':
-        this.drawWall(start, end, wallHeight, wallWidth);
-        break;
-      case 'door':
-        this.drawDoor(start, end, doorHeight, wallWidth, 0x00ff00); // Green color
-        break;
-      case 'window':
-        this.drawWindow(start, end, windowHeight, wallWidth, windowElevation, 0x0000ff); // Blue color
-        break;
-    }
-  });
-
-      // Adjust camera position
-      this.camera.position.set(0, gridSize / 2, gridSize);
-      this.camera.lookAt(0, 0, 0);
-
-      // Update the controls target
-      this.controls.target.set(0, 0, 0);
-
-      // Update the render
-      this.renderer.render(this.scene, this.camera);
-    }
-
-
-
-    private pointToVector3(x: number, y: number, minX: number, minY: number, scaleFactorX: number, scaleFactorY: number, gridSize: number): THREE.Vector3 {
-      return new THREE.Vector3(
-        (x - minX) * scaleFactorX - gridSize / 2,
-        0,
-        (y - minY) * scaleFactorY - gridSize / 2
-      );
-    }
-
-    private getShapeType(shape: Konva.Shape | Konva.Group): 'wall' | 'window' | 'door' | 'unknown' {
-      if (shape instanceof Konva.Line) {
-        return 'wall';
-      } else if (shape instanceof Konva.Group) {
-        const children = shape.getChildren();
-        if (children[0] instanceof Konva.Line && children[1] instanceof Konva.Line) {
-          return 'window';
-        } else if (children[0] instanceof Konva.Arc && children[1] instanceof Konva.Line) {
-          return 'door';
-        }
+  private getShapeType(
+    shape: Konva.Shape | Konva.Group
+  ): 'wall' | 'window' | 'door' | 'unknown' {
+    if (shape instanceof Konva.Line) {
+      return 'wall';
+    } else if (shape instanceof Konva.Group) {
+      const children = shape.getChildren();
+      if (
+        children[0] instanceof Konva.Line &&
+        children[1] instanceof Konva.Line
+      ) {
+        return 'window';
+      } else if (
+        children[0] instanceof Konva.Arc &&
+        children[1] instanceof Konva.Line
+      ) {
+        return 'door';
       }
-      return 'unknown';
     }
+    return 'unknown';
+  }
 
+  private drawWall(
+    start: THREE.Vector3,
+    end: THREE.Vector3,
+    wallHeight: number,
+    wallWidth: number
+  ) {
+    // Create wall
+    const wallLength = start.distanceTo(end);
+    const wallGeometry = new THREE.BoxGeometry(
+      wallLength,
+      wallHeight,
+      wallWidth
+    );
+    const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+    const wall = new THREE.Mesh(wallGeometry, wallMaterial);
 
+    // Position the wall
+    const midpoint = new THREE.Vector3()
+      .addVectors(start, end)
+      .multiplyScalar(0.5);
+    wall.position.set(midpoint.x, wallHeight / 2, midpoint.z);
 
+    // Rotate the wall to align with the line
+    const angle = Math.atan2(end.z - start.z, end.x - start.x);
+    wall.rotation.y = -angle;
 
-    private drawWall(start: THREE.Vector3, end: THREE.Vector3, wallHeight: number, wallWidth: number) {
-      // Create wall
-      const wallLength = start.distanceTo(end);
-      const wallGeometry = new THREE.BoxGeometry(wallLength, wallHeight, wallWidth);
-      const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
-      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-
-      // Position the wall
-      const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-      wall.position.set(midpoint.x, wallHeight / 2, midpoint.z);
-
-      // Rotate the wall to align with the line
-      const angle = Math.atan2(end.z - start.z, end.x - start.x);
-      wall.rotation.y = -angle;
-
-      this.scene.add(wall);
-    }
+    this.scene.add(wall);
+  }
 
   private drawDoor(
     start: THREE.Vector3,
@@ -430,7 +540,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     handle.add(keyhole);
     handle.add(handleGrips);
     const handle2 = handle.clone();
-    handle2.position.set(0, 0, -wallWidth + 1);
+    handle2.position.set(0, 0, -wallWidth - 0.7);
 
     // Create a group to hold the frame, panel, and handle
     const doorGroup = new THREE.Group();
@@ -438,6 +548,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     doorGroup.add(panel);
     doorGroup.add(handle);
     doorGroup.add(upperWall);
+    doorGroup.add(handle2);
 
     // Position the door group
 
@@ -528,5 +639,3 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
     this.scene.add(windowGroup);
   }
 }
-
-
