@@ -34,63 +34,113 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
       private walls: THREE.Mesh[] = [];
 
 
-      public wallHeight: number = 3000; // 5 meters in centimeters
-      public wallWidth: number = 200; // 30 centimeters
-      public doorHeight: number = 1500; // 3 meters in centimeters
-      public windowHeight: number = 1000; // Default window height in centimeters
+      public wallHeight: number = 4000; // 5 meters in centimeters
+      public wallWidth: number = 300; // 30 centimeters
+      public doorHeight: number = 2000; // 3 meters in centimeters
+      public windowHeight: number = 1500; // Default window height in centimeters
 
 
       currentWallColor: string;
       currentDoorColor: string;
       currentWindowColor: string;
       currentRoofColor: string;
+
+
+      // segments1 = [
+      //  // External wall
+      //  { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 4000, angle: 0 },
+      //  { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 4500, angle: 90 },
+      //  { start: 'A3', end: 'A4', name: 'External wall 3', type: 'wall', length: 4000, angle: 180 },
+      //  { start: 'A4', end: 'A1', name: 'External wall 4', type: 'wall', length: 4500, angle: 270 },
+
+
+
+      // //  inner walls Kitchen
+      // { start: 'A3', end: 'A5', name: 'Inner wall 1', type: 'wall', length: 1500, angle: 270 },
+      // { start: 'A5', end: 'A6', name: 'Inner wall 2', type: 'wall', length: 1400, angle: 180 },
+      // { start: 'A6', end: 'A7', name: 'Inner wall 3', type: 'wall', length: 1500, angle: 90 },
+
+
+      // // inner walls toilet
+      // { start: 'A4', end: 'A8', name: 'Inner wall 4', type: 'wall', length: 1500, angle: 270 },
+      // { start: 'A8', end: 'A9', name: 'Inner wall 5', type: 'wall', length: 1400, angle: 0 },
+      // { start: 'A9', end: 'A10', name: 'Inner wall 6', type: 'wall', length: 1500, angle: 90 },
+
+
+      // // Room door
+      // { start: 'A2', end: 'A11', name: 'Door 1', type: 'door', length: 1500, angle: 180 },
+
+      // // Kitchen door
+      // { start: 'A5', end: 'A13', name: 'Door 2', type: 'door', length: 900, angle: 180 },
+
+      // // toilet door
+      // { start: 'A9', end: 'A12', name: 'Door 3', type: 'door', length: 900, angle: 90 },
+
+
+      // // Room Window
+      // { start: 'A1', end: 'A14', name: 'Window External wall 1', type: 'wall', length: 500, angle: 0 },
+      // { start: 'A14', end: 'A15', name: 'Window 1', type: 'window', length: 1000, angle: 0 },
+
+      // // Kitchen Window
+      // { start: 'A3', end: 'A18', name: 'Window External wall 2', type: 'wall', length: 250, angle: 180 },
+      // { start: 'A18', end: 'A19', name: 'Window 2', type: 'window', length: 800, angle: 180 },
+
+
+      //  // toilet Window
+      //  { start: 'A4', end: 'A16', name: 'Window External wall 2', type: 'wall', length: 250, angle: 0 },
+      //  { start: 'A16', end: 'A17', name: 'Window 3', type: 'window', length: 500, angle: 0 },
+
+      // ];
+
+
+
+       segments1 = [
+        // External wall
+        { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 5000, angle: 0 },
+        { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 5000, angle: 90 },
+        { start: 'A3', end: 'A4', name: 'External wall 3', type: 'wall', length: 5000, angle: 180 },
+        { start: 'A4', end: 'A1', name: 'External wall 4', type: 'wall', length: 5000, angle: 270 },
+
+        // Inner walls Kitchen
+        { start: 'A3', end: 'A5', name: 'Inner wall 1', type: 'wall', length: 2000, angle: 270 },
+        { start: 'A5', end: 'A6', name: 'Inner wall 2', type: 'wall', length: 2500, angle: 180 },
+        { start: 'A6', end: 'A7', name: 'Inner wall 3', type: 'wall', length: 2000, angle: 90 },
+
+        // Inner walls Toilet
+        { start: 'A4', end: 'A8', name: 'Inner wall 4', type: 'wall', length: 1500, angle: 270 },
+        { start: 'A8', end: 'A9', name: 'Inner wall 5', type: 'wall', length: 1800, angle: 0 },
+        { start: 'A9', end: 'A10', name: 'Inner wall 6', type: 'wall', length: 1500, angle: 90 },
+
+        // Pathway
+        { start: 'A1', end: 'A11', name: 's wall 1', type: 'wall', length: 2000, angle: 90 },
+        { start: 'A11', end: 'A12', name: 'Pathway wall 2', type: 'wall', length: 1000, angle: 0 },
+        { start: 'A12', end: 'A13', name: 'Pathway wall 3', type: 'wall', length: 2000, angle: 270 },
+
+        // Room door
+        { start: 'A2', end: 'A14', name: 'Door 1', type: 'door', length: 1500, angle: 180 },
+
+        // Kitchen door
+        { start: 'A5', end: 'A15', name: 'Door 2', type: 'door', length: 900, angle: 180 },
+
+        // Toilet door
+        { start: 'A9', end: 'A16', name: 'Door 3', type: 'door', length: 900, angle: 90 },
+
+        // Room Window
+        { start: 'A1', end: 'A17', name: 'Window External wall 1', type: 'wall', length: 500, angle: 0 },
+        { start: 'A17', end: 'A18', name: 'Window 1', type: 'window', length: 1000, angle: 0 },
+
+        // Kitchen Window
+        { start: 'A3', end: 'A19', name: 'Window External wall 2', type: 'wall', length: 250, angle: 180 },
+        { start: 'A19', end: 'A20', name: 'Window 2', type: 'window', length: 800, angle: 180 },
+
+        // Toilet Window
+        { start: 'A4', end: 'A21', name: 'Window External wall 3', type: 'wall', length: 250, angle: 0 },
+        { start: 'A21', end: 'A22', name: 'Window 3', type: 'window', length: 500, angle: 0 },
+    ];
+
+
+
       segments2 = [
-       // External wall
-       { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 4000, angle: 0 },
-       { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 4500, angle: 90 },
-       { start: 'A3', end: 'A4', name: 'External wall 3', type: 'wall', length: 4000, angle: 180 },
-       { start: 'A4', end: 'A1', name: 'External wall 4', type: 'wall', length: 4500, angle: 270 },
-
-
-
-      //  inner walls Kitchen
-      { start: 'A3', end: 'A5', name: 'Inner wall 1', type: 'wall', length: 1500, angle: 270 },
-      { start: 'A5', end: 'A6', name: 'Inner wall 2', type: 'wall', length: 1400, angle: 180 },
-      { start: 'A6', end: 'A7', name: 'Inner wall 3', type: 'wall', length: 1500, angle: 90 },
-
-
-      // inner walls toilet
-      { start: 'A4', end: 'A8', name: 'Inner wall 4', type: 'wall', length: 1500, angle: 270 },
-      { start: 'A8', end: 'A9', name: 'Inner wall 5', type: 'wall', length: 1400, angle: 0 },
-      { start: 'A9', end: 'A10', name: 'Inner wall 6', type: 'wall', length: 1500, angle: 90 },
-
-
-      // parlor door
-      { start: 'A2', end: 'A11', name: 'Door 1', type: 'door', length: 1500, angle: 180 },
-
-      // Kitchen door
-      { start: 'A5', end: 'A13', name: 'Door 2', type: 'door', length: 900, angle: 180 },
-
-      // toilet door
-      { start: 'A9', end: 'A12', name: 'Door 3', type: 'door', length: 900, angle: 90 },
-
-
-      // Parlor Window
-      { start: 'A1', end: 'A14', name: 'Window External wall 1', type: 'wall', length: 500, angle: 0 },
-      { start: 'A14', end: 'A15', name: 'Window 1', type: 'window', length: 1000, angle: 0 },
-
-      // Kitchen Window
-      { start: 'A3', end: 'A18', name: 'Window External wall 2', type: 'wall', length: 250, angle: 180 },
-      { start: 'A18', end: 'A19', name: 'Window 2', type: 'window', length: 800, angle: 180 },
-
-
-       // toilet Window
-       { start: 'A4', end: 'A16', name: 'Window External wall 2', type: 'wall', length: 250, angle: 0 },
-       { start: 'A16', end: 'A17', name: 'Window 3', type: 'window', length: 500, angle: 0 },
-
-      ];
-
-      segments1 = [
         // External wall
         { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 9000, angle: 0 },
         { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 7750, angle: 90 },
@@ -129,39 +179,40 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
         { start: 'A9', end: 'A11', name: 'Door 2', type: 'door', length: 1000, angle: 180 },
 
         // // toilet door
-        { start: 'A11', end: 'A16', name: 'Door 3', type: 'door', length: 1000, angle: 270 },
+        { start: 'A11', end: 'A32', name: 'internal wall 12', type: 'wall', length: 250, angle: 270 },
+        { start: 'A32', end: 'A16', name: 'Door 3', type: 'door', length: 500, angle: 270 },
 
         // // Master bedroom door
         { start: 'A6', end: 'A12', name: 'Door 4', type: 'door', length: 1000, angle: 180 },
 
         // // kitchen door
-        { start: 'A13', end: 'A18', name: 'internal wall 12', type: 'wall', length: 1125, angle: 90 },
+        { start: 'A13', end: 'A18', name: 'internal wall 13', type: 'wall', length: 1125, angle: 90 },
         { start: 'A18', end: 'A19', name: 'door 5', type: 'door', length: 1500, angle: 90 },
 
 
         // Windows
         // Living room window
-        { start: 'A3', end: 'A20', name: 'internal wall 11', type: 'wall', length: 500, angle: 180 },
+        { start: 'A3', end: 'A20', name: 'internal wall 14', type: 'wall', length: 500, angle: 180 },
         { start: 'A20', end: 'A21', name: 'Window 1', type: 'window', length: 1300, angle: 180 },
 
         // bedroom window
-        { start: 'A4', end: 'A22', name: 'internal wall 12', type: 'wall', length: 500 , angle: 270 },
+        { start: 'A4', end: 'A22', name: 'internal wall 15', type: 'wall', length: 500 , angle: 270 },
         { start: 'A22', end: 'A23', name: 'Window 2', type: 'window', length: 1100, angle: 270 },
 
         // toilet window
-        { start: 'A8', end: 'A24', name: 'internal wall 13', type: 'wall', length: 250 , angle: 270 },
-        { start: 'A24', end: 'A25', name: 'Window 3', type: 'window', length: 1000, angle: 270 },
+        { start: 'A8', end: 'A24', name: 'internal wall 16', type: 'wall', length: 250 , angle: 270 },
+        { start: 'A24', end: 'A25', name: 'Window 3', type: 'window', length: 500, angle: 270 },
 
         // master Bedroom window
-        { start: 'A7', end: 'A26', name: 'internal wall 14', type: 'wall', length: 500 , angle: 270 },
+        { start: 'A7', end: 'A26', name: 'internal wall 17', type: 'wall', length: 500 , angle: 270 },
         { start: 'A26', end: 'A27', name: 'Window 4', type: 'window', length: 1300, angle: 270 },
 
         // corridor window
-        { start: 'A5', end: 'A28', name: 'internal wall 15', type: 'wall', length: 750 , angle: 0 },
+        { start: 'A5', end: 'A28', name: 'internal wall 18', type: 'wall', length: 750 , angle: 0 },
         { start: 'A28', end: 'A29', name: 'Window 5', type: 'window', length: 1500, angle: 0 },
 
         // Kitchen window
-        { start: 'A2', end: 'A30', name: 'internal wall 16', type: 'wall', length: 750 , angle: 90 },
+        { start: 'A2', end: 'A30', name: 'internal wall 19', type: 'wall', length: 750 , angle: 90 },
         { start: 'A30', end: 'A31', name: 'Window 6', type: 'window', length: 1500, angle: 90 },
 
 
@@ -218,11 +269,16 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
 
       }
 
+
+
       initializeStage() {
+        const screenSize = Math.max(window.innerWidth, window.innerHeight);
+        const stageSize = screenSize ; // You can adjust this multiplier as needed
+
         this.stage = new Konva.Stage({
           container: this.containerRef.nativeElement,
-          width: window.innerWidth,
-          height: window.innerHeight
+          width: stageSize,
+          height: stageSize
         });
       }
 
@@ -373,8 +429,8 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
 
         const canvasWidth = this.stage.width();
         const canvasHeight = this.stage.height();
-        const sceneWidth = 15000 * this.lengthScaleFactor;
-        const sceneHeight = 15000 * this.lengthScaleFactor;
+        const sceneWidth = 12000 * this.lengthScaleFactor;
+        const sceneHeight = 12000 * this.lengthScaleFactor;
         const scaleX = sceneWidth / canvasWidth;
         const scaleZ = sceneHeight / canvasHeight;
 
@@ -382,7 +438,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
         // const gridSize = Math.max(sceneWidth, sceneHeight);
   const gridDivisions = 20 * this.lengthScaleFactor;
   const gridHelper = new THREE.GridHelper(50000, gridDivisions, 0x000000, 0x000000);
-  gridHelper.position.set(sceneWidth / 2, 0, sceneHeight / 2);
+  gridHelper.position.set(sceneWidth , 0, sceneHeight );
   this.scene.add(gridHelper);
   // this.createGridFloor();
         // Add lights
@@ -761,7 +817,7 @@ private addLights(sceneWidth: number, sceneHeight: number) {
         const centerX = (minX + maxX) / 2;
         const centerZ = (minZ + maxZ) / 2;
         // Roof parameters
-        const roofOverhang = 20;
+        const roofOverhang = 1000;
         const roofAngle = Math.PI / 5; // 30 degrees
         const roofHeight = Math.max(houseWidth, houseLength) * Math.tan(roofAngle) / 2;
         const roofThickness = 5;
