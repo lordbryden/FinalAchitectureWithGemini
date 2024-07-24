@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import Konva from 'konva';
 import { DrawingService } from './drawing.service';
+import { HomePage } from '../home/home.page';
 
 interface Segment {
   start: string;
@@ -19,15 +20,21 @@ interface Point {
 @Injectable({
   providedIn: 'root'
 })
-export class AutoDrawService {
+export class AutoDrawService implements OnInit {
   private layer: Konva.Layer;
-  private pixelsPerMeter: number = 100;
+  private pixelsPerMeter!: number ;
   private pointMap: Map<string, Point> = new Map();
 
-  constructor(private drawingService: DrawingService) {
+
+  constructor(private drawingService: DrawingService ) {
+
     this.layer = this.drawingService.getLayer();
   }
 
+  ngOnInit() {
+
+
+  }
   async drawShape(segments: Segment[], delayMs: number = 500) {
     this.calculateAndStorePoints(segments);
     const bounds = this.calculateBounds(Array.from(this.pointMap.values()));
@@ -46,6 +53,8 @@ export class AutoDrawService {
     }
 
     this.layer.batchDraw();
+
+    // Check if the shape is larger than the canvas
   }
 
   private calculateAndStorePoints(segments: Segment[]) {
@@ -126,6 +135,7 @@ export class AutoDrawService {
   }
 
   private calculateOffset(bounds: { minX: number, minY: number, maxX: number, maxY: number }): Point {
+    this.pixelsPerMeter = this.drawingService.getScale();
     const stage = this.layer.getStage();
     const stageWidth = stage.width();
     const stageHeight = stage.height();
@@ -146,10 +156,75 @@ export class AutoDrawService {
   }
 
   private lengthToPixels(length: number): number {
+    this.pixelsPerMeter = this.drawingService.getScale();
+
     return (length / 1000) * this.pixelsPerMeter;
   }
 
   private degreesToRadians(degrees: number): number {
+    this.pixelsPerMeter = this.drawingService.getScale();
+
     return degrees * (Math.PI / 180);
   }
+
+
+
+  checkShapeSize() {
+    const stage = this.layer.getStage();
+    if (!stage) {
+      console.error('Stage not found');
+      return 0;
+    }
+
+    const canvasWidth = stage.width();
+    const canvasHeight = stage.height();
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    // Calculate the bounding box of all points
+    this.pointMap.forEach((point) => {
+      minX = Math.min(minX, point.x);
+      minY = Math.min(minY, point.y);
+      maxX = Math.max(maxX, point.x);
+      maxY = Math.max(maxY, point.y);
+    });
+
+    const shapeWidth = maxX - minX;
+    const shapeHeight = maxY - minY;
+    const currentPixelsPerMeter = this.drawingService.getScale();
+
+    if (shapeWidth > canvasWidth || shapeHeight > canvasHeight) {
+      console.log('The drawn shape is larger than the canvas. Adjusting scale...');
+
+      // Calculate the scale factor needed to fit the shape
+      const scaleX = canvasWidth / shapeWidth;
+      const scaleY = canvasHeight / shapeHeight;
+      const scaleFactor = Math.min(scaleX, scaleY) * 0.5; // 0.9 to leave some margin
+
+      // Calculate the new pixels per meter
+      const newPixelsPerMeter = Math.floor(currentPixelsPerMeter * scaleFactor);
+
+      console.log(`Adjusted pixelsPerMeter from ${currentPixelsPerMeter} to ${newPixelsPerMeter}`);
+
+      // Set the new scale
+      this.drawingService.setScale(newPixelsPerMeter);
+
+      // Update all point positions with the new scale
+      this.pointMap.forEach((point, key) => {
+        this.pointMap.set(key, {
+          x: point.x * scaleFactor,
+          y: point.y * scaleFactor
+        });
+      });
+
+      return newPixelsPerMeter;
+    } else {
+      console.log('The drawn shape fits within the canvas');
+      return currentPixelsPerMeter;
+    }
+  }
+
 }
