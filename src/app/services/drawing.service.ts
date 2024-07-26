@@ -24,7 +24,7 @@ export class DrawingService {
   private shapes: Array<{ shape: Konva.Shape | Konva.Group, startCircle: Konva.Circle, endCircle: Konva.Circle }> = [];
   private selectionRect: Konva.Rect | null = null;
   private selectedShapes: Set<Konva.Shape | Konva.Group> = new Set();
-  private pixelsPerMeter = 150; // Adjust this value based on your needs
+  private pixelsPerMeter = 30; // Adjust this value based on your needs
 
   private selectionBoundingRect: Konva.Rect | null = null;
   private dragLayer!: Konva.Layer;

@@ -150,8 +150,8 @@ export class AutoDrawService implements OnInit {
     this.pixelsPerMeter *= scale;
 
     return {
-      x: (stageWidth * 0.15) - bounds.minX * scale,
-      y: (stageHeight * 0.15) - bounds.minY * scale
+      x: (stageWidth * 0.05) - bounds.minX * scale,
+      y: (stageHeight * 0.05) - bounds.minY * scale
     };
   }
 
