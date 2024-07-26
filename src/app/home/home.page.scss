@@ -1,0 +1,97 @@
+// Global styles
+$overlay-opacity: 0.5;
+$primary-color: #3880ff; // Adjust color as needed
+
+.image-section {
+  position: relative;
+  width: 100%;
+  height: 50vh; // Takes half of the screen height
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 60px;
+    background: rgba(0, 0, 0, $overlay-opacity);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .overlay-content {
+      color: white;
+      padding: 0 20px 0 20px;
+
+      .main-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        align-items: center;
+        text-align: center;
+      }
+
+      .sub-text {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        text-align: left;
+      }
+    }
+  }
+}
+
+.pre-built-designs,
+.previous-designs {
+  text-align: center;
+  margin-top: 16px;
+
+  h2 {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 1rem 0;
+  }
+}
+
+.scroll-container {
+  display: flex;
+  // gap: 1rem;
+}
+
+.design-card {
+  flex-shrink: 0;
+  padding: 12px;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.design-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  .design-card {
+    width: auto;
+    display: inline-block;
+  }
+}
+.background {
+  --background: white;
+}
+.blackColor {
+  margin-top: 12px;
+  font-weight: bold;
+  color: black;
+}
+.horizontal-scroll-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap;
+}
+.white-text {
+  color: #0a0a0a;
+}

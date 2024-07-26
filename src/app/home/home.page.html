@@ -1,3 +1,42 @@
-<div>
-    homepage
-</div>
+<ion-header class="background">
+    <ion-toolbar class="background">
+        <ion-title color="darker" class="white-text">Home</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="background">
+    <!-- Image Section -->
+    <div class="image-section">
+        <img src="assets/first.jpg" alt="Main Image" />
+        <div class="overlay">
+            <div class="overlay-content">
+                <h1 class="main-text">Start a New Design</h1>
+                <p class="sub-text">
+                    Start building your personal home with simple prompts
+                </p>
+                <ion-button (click)="goToDesign(0)">Start New Design</ion-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pre-Built Designs Section -->
+    <div class="pre-built-designs">
+        <div class="blackColor">PRE-BUILDED DESIGN</div>
+        <div class="horizontal-scroll-container">
+            <div class="design-card" *ngFor="let design of previousDesigns">
+                <app-house-card [design]="design" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Previous Designs Section -->
+    <div class="previous-designs">
+        <div class="blackColor">PREVIOUS DESIGNS</div>
+
+        <div class="design-grid">
+            <div class="design-card" *ngFor="let design of previousDesigns">
+                <app-house-card [design]="design" />
+            </div>
+        </div>
+    </div>
+</ion-content>

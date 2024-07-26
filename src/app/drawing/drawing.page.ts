@@ -20,6 +20,7 @@ export class DrawingPage  {
 
   @ViewChild('container', { static: true }) containerRef!: ElementRef;
   @ViewChild('threeContainer', { static: true }) threeContainerRef!: ElementRef;
+
   private stage!: Konva.Stage;
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;

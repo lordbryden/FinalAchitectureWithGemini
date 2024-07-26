@@ -11,3 +11,22 @@ ion-button.selected {
 #threeContainer {
     background-color: #f0f0f0;
 }
+
+.image-container {
+    position: relative;
+    top: -40px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    // overflow: hidden;
+    border-radius: 500px;
+    /* Adjust radius as needed */
+}
+
+.background {
+    --background: white;
+}
+
+.color-black {
+    color: #0a0a0a;
+}

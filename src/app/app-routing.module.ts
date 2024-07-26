@@ -12,7 +12,7 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'drawing',
+    path: 'drawing/:id',
     loadChildren: () => import('./drawing/drawing.module').then( m => m.DrawingPageModule)
   },
 ];
