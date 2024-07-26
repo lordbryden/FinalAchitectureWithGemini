@@ -54,12 +54,35 @@
     </ion-item>
   </ion-content>
 </ion-menu>
+<ion-menu side="end" menuId="second-menu" contentId="main-content">
+  <ion-content class="ion-padding" class="background">
+    <div>
+      <ion-item lines="none" class="background">
+        <ion-text class="color-black">Wall colour</ion-text>
+        <!-- <ion-input /> -->
+      </ion-item>
+    </div>
+  </ion-content>
+</ion-menu>
 <ion-content>
   <div class="ion-page" id="main-content" class="background">
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" class="ion-padding">
+          <!-- <ion-back-button>s</ion-back-button> -->
+        </ion-buttons>
+        <ion-buttons
+          slot="end"
+          class="background paddingr"
+          (click)="openSecondMenu()"
+        >
           <ion-menu-button></ion-menu-button>
+
+          <ion-icon
+            name="ellipsis-vertical"
+            class="icon-size"
+            aria-hidden="true"
+          ></ion-icon>
         </ion-buttons>
         <ion-title>Menu</ion-title>
       </ion-toolbar>
@@ -240,9 +263,9 @@
           </button>
         </ion-col>
         <!-- <ion-col>
-            <ion-button (click)="undo()">Undo</ion-button>
-            <ion-button (click)="redo()">Redo</ion-button>
-        </ion-col> -->
+              <ion-button (click)="undo()">Undo</ion-button>
+              <ion-button (click)="redo()">Redo</ion-button>
+          </ion-col> -->
         <!-- Additional buttons will be added here -->
       </ion-row>
     </ion-grid>

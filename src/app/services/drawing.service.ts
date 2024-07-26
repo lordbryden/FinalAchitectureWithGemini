@@ -24,7 +24,7 @@ export class DrawingService {
   private shapes: Array<{ shape: Konva.Shape | Konva.Group, startCircle: Konva.Circle, endCircle: Konva.Circle }> = [];
   private selectionRect: Konva.Rect | null = null;
   private selectedShapes: Set<Konva.Shape | Konva.Group> = new Set();
-  private pixelsPerMeter = 150; // Adjust this value based on your needs
+  private pixelsPerMeter = 30; // Adjust this value based on your needs
 
   private selectionBoundingRect: Konva.Rect | null = null;
   private dragLayer!: Konva.Layer;
@@ -60,6 +60,7 @@ export class DrawingService {
   getScale(): number {
     return this.pixelsPerMeter;
   }
+
   setScaleFactor(factor: number) {
     this.scaleFactor = factor;
   }
@@ -67,7 +68,6 @@ export class DrawingService {
   getScaleFactor() {
     return this.scaleFactor;
   }
-
   private updateAllShapesAndMeasurements(scaleFactor: number) {
     this.shapes.forEach(shapeInfo => {
       const start = shapeInfo.startCircle.position();
@@ -717,7 +717,7 @@ export class DrawingService {
     }
   }
 
-  private getShapeType(shape: Konva.Shape | Konva.Group): 'wall' | 'window' | 'door' | 'unknown' {
+  public getShapeType(shape: Konva.Shape | Konva.Group): 'wall' | 'window' | 'door' | 'unknown' {
     if (shape instanceof Konva.Line) {
       return 'wall';
     } else if (shape instanceof Konva.Group) {

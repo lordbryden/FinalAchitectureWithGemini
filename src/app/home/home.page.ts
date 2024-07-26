@@ -4,6 +4,7 @@ import { AutoDrawService } from '../services/auto-draw.service';
 import { DrawingService } from '../services/drawing.service';
 import { GridService } from '../services/grid.service';
 import Konva from 'konva';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -48,7 +49,7 @@ export class HomePage {
     },
     // Add more previous design objects as needed
   ];
-  constructor() {}
+  constructor(private router : Router) {}
   // Do not touch this commented code abeg
 
   // private drawDoor(
@@ -256,4 +257,8 @@ export class HomePage {
   //   windowGroup.rotation.y = -angle;
   //   this.scene.add(windowGroup);
   // }
+
+  goToDesign(id : any){
+    this.router.navigate(['/drawing', id]);
+  }
 }
