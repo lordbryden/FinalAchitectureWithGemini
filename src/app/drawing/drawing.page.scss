@@ -1,13 +1,28 @@
 ion-button.selected {
-    --background: var(--ion-color-primary-shade);
+  --background: var(--ion-color-primary-shade);
 }
 
 #container,
 #rendererContainer {
-    width: 100%;
-    height: calc(100% - 200px); // Adjust based on your button heights
+  width: 100%;
+  height: calc(100% - 200px); // Adjust based on your button heights
 }
 
 #threeContainer {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
+}
+.image-container {
+  position: relative;
+  top: -40px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  // overflow: hidden;
+  border-radius: 500px; /* Adjust radius as needed */
+}
+.background {
+  --background: white;
+}
+.color-black {
+  color: #0a0a0a;
 }
