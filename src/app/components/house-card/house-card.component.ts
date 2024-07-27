@@ -7,7 +7,7 @@ import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 })
 export class HouseCardComponent implements OnInit {
   @Input()
-  design!: { image: string; title: string; description: string };
+  design!: { id: string; title: string; description: string , thumbnail: string;};
   constructor() {}
 
   ngOnInit() {}

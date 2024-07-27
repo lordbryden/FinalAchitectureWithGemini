@@ -5,51 +5,38 @@ import { DrawingService } from '../services/drawing.service';
 import { GridService } from '../services/grid.service';
 import Konva from 'konva';
 import { Router } from '@angular/router';
+import { SaveDrawingService } from '../services/save-drawing.service';
 
+
+interface Design {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+}
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  preBuiltDesigns = [
-    {
-      image: 'assets/first.jpg',
-      title: 'Design 1',
-      description: 'A beautiful modern house.',
-    },
-    {
-      image: 'assets/first.jpg',
-      title: 'Design 2',
-      description: 'Classic style with spacious rooms.',
-    },
-    // Add more design objects as needed
-  ];
+  // preBuiltDesigns = [
+  //   {
+  //     image: 'assets/first.jpg',
+  //     title: 'Design 1',
+  //     description: 'A beautiful modern house.',
+  //   },
+  //   {
+  //     image: 'assets/first.jpg',
+  //     title: 'Design 2',
+  //     description: 'Classic style with spacious rooms.',
+  //   },
+  //   // Add more design objects as needed
+  // ];
 
-  previousDesigns = [
-    {
-      image: 'assets/first.jpg',
-      title: 'Previous Design 1',
-      description: 'A cozy small house.',
-    },
-    {
-      image: 'assets/second.jpg',
-      title: 'Previous Design 2',
-      description: 'Contemporary design with open spaces.',
-    },
-    {
-      image: 'assets/shapes.svg',
-      title: 'Previous Design 1',
-      description: 'A cozy small house.',
-    },
-    {
-      image: 'assets/first.jpg',
-      title: 'Previous Design 2',
-      description: 'Contemporary design with open spaces.',
-    },
-    // Add more previous design objects as needed
-  ];
-  constructor(private router : Router) {}
+  previousDesigns: Design[] = [];
+  savedDrawings: any;
+  constructor(private router : Router , private drawingService: DrawingService , private saveService : SaveDrawingService) {}
   // Do not touch this commented code abeg
 
   // private drawDoor(
@@ -257,6 +244,38 @@ export class HomePage {
   //   windowGroup.rotation.y = -angle;
   //   this.scene.add(windowGroup);
   // }
+
+
+  ngOnInit() {
+  }
+  ionViewDidEnter(){
+    this.previousDesigns = [];
+    this.loadSavedDrawings();
+
+  }
+
+  loadSavedDrawings() {
+    // Assuming you have a way to get all saved drawing IDs
+    Object.keys(localStorage).forEach(key => {
+      console.log(key)
+      const item = localStorage.getItem(key);
+      if (item) {
+        try {
+          const parsedItem = JSON.parse(item);
+          const design: Design = {
+            id: key,
+            title: parsedItem.title || 'Untitled',
+            description: parsedItem.description || 'No description',
+            thumbnail: parsedItem.thumbnail || 'default-thumbnail-url'
+          };
+          this.previousDesigns.push(design);
+        } catch (error) {
+          console.error(`Error parsing item with key "${key}":`, error);
+          console.log('Problematic item:', item);
+        }
+      }
+    });
+  }
 
   goToDesign(id : any){
     this.router.navigate(['/drawing', id]);

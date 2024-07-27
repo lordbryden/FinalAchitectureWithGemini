@@ -24,7 +24,7 @@
         <div class="blackColor">PRE-BUILDED DESIGN</div>
         <div class="horizontal-scroll-container">
             <div class="design-card" *ngFor="let design of previousDesigns">
-                <app-house-card [design]="design" />
+                <app-house-card [design]="design" (click)="goToDesign(design.id)" />
             </div>
         </div>
     </div>
@@ -35,7 +35,7 @@
 
         <div class="design-grid">
             <div class="design-card" *ngFor="let design of previousDesigns">
-                <app-house-card [design]="design" />
+                <app-house-card [design]="design" (click)="goToDesign(design.id)" />
             </div>
         </div>
     </div>

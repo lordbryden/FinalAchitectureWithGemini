@@ -15,7 +15,7 @@ interface ShapeInfo {
 })
 export class DrawingService {
   private layer: Konva.Layer;
-  private currentMode: 'wall' | 'window' | 'door' | 'select' | 'adjust' | null = null;
+  private currentMode: 'wall' | 'window' | 'door' | 'select' | 'adjust' | null = 'wall';
   private isDrawing = false;
   private startPoint: Konva.Vector2d | null = null;
   private currentShape: Konva.Shape | Konva.Group | null = null;
@@ -1171,5 +1171,41 @@ export class DrawingService {
     this.layer.batchDraw();
   }
 
+// In drawing.service.ts
 
+generateThumbnail(width: number, height: number): string {
+  const stage = this.layer.getStage();
+  if (!stage) {
+    console.error('Stage not found');
+    return '';
+  }
+
+  // Create a temporary white rectangle as background
+  const bgRect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: stage.width(),
+    height: stage.height(),
+    fill: 'white',
+  });
+
+  // Add the white rectangle to the bottom of the layer
+  this.layer.add(bgRect);
+  bgRect.moveToBottom();
+
+  // Convert the stage to a data URL
+  const dataURL = stage.toDataURL({
+    width: width,
+    height: height,
+    pixelRatio: 1,
+    mimeType: 'image/png',
+    quality: 0.8
+  });
+
+  // Remove the temporary background
+  bgRect.destroy();
+  this.layer.batchDraw();
+
+  return dataURL;
+}
 }
