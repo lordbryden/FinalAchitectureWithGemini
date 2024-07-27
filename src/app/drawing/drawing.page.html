@@ -1,9 +1,30 @@
-<ion-menu contentId="main-content" class="background">
-  <div class="image-container" class="background">
-    <img src="/assets/first.jpg" alt="Half Image" class="image-container" />
-  </div>
+<ion-menu
+  side="end"
+  contentId="main-content"
+  menuId="first-menu"
+  class="background"
+>
   <ion-content class="ion-padding" class="background">
-    <ion-item class="background" lines="none">
+    <div class="image-container" class="background">
+      <img src="/assets/first.jpg" alt="Half Image" class="image-containers" />
+    </div>
+    <div class="flex">
+      <label for="scaleInput" class="color-black forInput">Scale</label>
+      <input
+        id="scaleInput"
+        type="number"
+        [(ngModel)]="currentScale"
+        (change)="updateScale()"
+        class="half-width-input"
+      />
+    </div>
+
+    <ion-item
+      class="background"
+      lines="none"
+      (click)="selectDoor()"
+      [class.selected]="currentMode === 'door'"
+    >
       <fa-icon
         [icon]="['fas', 'door-closed']"
         class="color-black"
@@ -11,7 +32,12 @@
       ></fa-icon>
       <ion-text class="color-black">Door</ion-text>
     </ion-item>
-    <ion-item class="background" lines="none">
+    <ion-item
+      class="background"
+      lines="none"
+      (click)="selectWindow()"
+      [class.selected]="currentMode === 'window'"
+    >
       <fa-icon
         [icon]="['fas', 'square']"
         class="color-black"
@@ -19,7 +45,12 @@
       ></fa-icon>
       <ion-text class="color-black">Window</ion-text>
     </ion-item>
-    <ion-item class="background" lines="none">
+    <ion-item
+      class="background"
+      lines="none"
+      (click)="selectWall()"
+      [class.selected]="currentMode === 'wall'"
+    >
       <fa-icon
         [icon]="['far', 'square']"
         class="color-black"
@@ -33,244 +64,338 @@
         class="color-black"
         slot="start"
       ></fa-icon>
-      <ion-text class="color-black">3D Image</ion-text>
+      <ion-text class="color-black" (click)="convert2DTo3D()"
+        >3D Image</ion-text
+      >
+    </ion-item>
+    <ion-item
+      class="background"
+      lines="none"
+      (click)="selectMode()"
+      [class.selected]="currentMode === null"
+    >
+      <fa-icon
+        [icon]="['fas', 'check']"
+        class="color-black"
+        slot="start"
+      ></fa-icon>
+      <ion-text class="color-black">Select</ion-text>
+    </ion-item>
+    <ion-item class="background" lines="none" (click)="deleteMode()">
+      <fa-icon [icon]="['fas', 'x']" class="color-black" slot="start"></fa-icon>
+      <ion-text class="color-black">Delete</ion-text>
+    </ion-item>
+    <ion-item class="background" lines="none" (click)="toggleDimentionMode()">
+      <fa-icon
+        [icon]="['fas', getDimensionsIcon()]"
+        class="color-black"
+        slot="start"
+      ></fa-icon>
+      <ion-text class="color-black" (click)="toggleDistanceLabels()"
+        >Toggle dimentions</ion-text
+      >
     </ion-item>
 
+    <ion-item class="background" lines="none" (click)="toggleGridMenu()">
+      <fa-icon
+        [icon]="['fas', getGridIcon()]"
+        class="color-black"
+        slot="start"
+      ></fa-icon>
+      <ion-text class="color-black">Toggle grid</ion-text>
+    </ion-item>
+    <ion-item class="background" lines="none" (click)="downloadPlan()">
+      <fa-icon
+        [icon]="['fas', 'download']"
+        class="color-black"
+        slot="start"
+      ></fa-icon>
+      <ion-text class="color-black">Download plan</ion-text>
+    </ion-item>
     <ion-item class="background" lines="none">
       <fa-icon
         [icon]="['fas', 'square-xmark']"
         class="color-black"
         slot="start"
       ></fa-icon>
-      <ion-text class="color-black">Clear Grid</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none">
-      <fa-icon
-        [icon]="['fas', 'toggle-on']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Toggle grid</ion-text>
+      <ion-text class="color-black" (click)="clearGrid()">Clear Grid</ion-text>
     </ion-item>
   </ion-content>
 </ion-menu>
 <ion-menu side="end" menuId="second-menu" contentId="main-content">
   <ion-content class="ion-padding" class="background">
-    <div>
-      <ion-item lines="none" class="background">
-        <ion-text class="color-black">Wall colour</ion-text>
-        <!-- <ion-input /> -->
-      </ion-item>
+    <ion-button (click)="resetColors()" class="reset-button"
+      >Reset Colors</ion-button
+    >
+    <div class="right-menu-div">
+      <div class="flex">
+        <label class="color-black items">Wall color (cm):</label>
+        <input
+          class="items"
+          fill="outline"
+          maxlength="1"
+          type="color"
+          [value]="currentWallColor"
+          (change)="onWallColorChange($event)"
+        />
+      </div>
+      <div class="flex">
+        <label class="color-black items" for="wallWidth"
+          >Wall Width (cm):</label
+        >
+        <input
+          class="items"
+          id="wallWidth"
+          maxlength="10"
+          type="number"
+          [(ngModel)]="wallWidth"
+          (change)="convert2DTo3D()"
+        />
+      </div>
+      <div class="flex">
+        <label for="wallHeight" class="color-black items"
+          >Wall Height (cm):</label
+        >
+        <input
+          class="items"
+          width=""
+          id="wallWidth"
+          maxlength="10"
+          id="wallHeight"
+          type="number"
+          [(ngModel)]="wallHeight"
+          (change)="convert2DTo3D()"
+        />
+      </div>
+
+      <div class="flex">
+        <label class="color-black items">Door colour:</label>
+        <input
+          class="items"
+          fill="outline"
+          maxlength="1"
+          type="color"
+          [value]="currentDoorColor"
+          (change)="onDoorColorChange($event)"
+        />
+      </div>
+      <div class="flex">
+        <label for="wallHeight" class="color-black items"
+          >Wall Height (cm):</label
+        >
+        <input
+          class="items background"
+          maxlength="10"
+          id="doorHeight"
+          type="number"
+          [(ngModel)]="doorHeight"
+          (change)="convert2DTo3D()"
+        />
+      </div>
+      <div class="flex">
+        <label class="color-black items">Window color (cm):</label>
+        <input
+          class="items"
+          fill="outline"
+          maxlength="1"
+          type="color"
+          [value]="currentWindowColor"
+          (change)="onWindowColorChange($event)"
+        />
+      </div>
+      <div class="flex">
+        <label for="Window Hieght" class="color-black items"
+          >Window Height (cm)</label
+        >
+
+        <input
+          class="items background"
+          maxlength="10"
+          id="doorHeight"
+          type="number"
+          [(ngModel)]="windowHeight"
+          (change)="convert2DTo3D()"
+        />
+      </div>
     </div>
   </ion-content>
 </ion-menu>
-<ion-content>
-  <div class="ion-page" id="main-content" class="background">
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start" class="ion-padding">
-          <!-- <ion-back-button>s</ion-back-button> -->
-        </ion-buttons>
-        <ion-buttons
-          slot="end"
-          class="background paddingr"
-          (click)="openSecondMenu()"
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" class="ion-padding">
+      <!-- <ion-back-button>s</ion-back-button> -->
+    </ion-buttons>
+    <ion-buttons slot="end" class="background paddingr">
+      <ion-icon
+        name="ellipsis-vertical"
+        class="icon-size"
+        aria-hidden="true"
+        (click)="openFirstMenu()"
+      ></ion-icon>
+      <ion-icon
+        name="ellipsis-vertical"
+        class="icon-size"
+        aria-hidden="true"
+        (click)="openSecondMenu()"
+      ></ion-icon>
+    </ion-buttons>
+    <ion-title>Menu</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-page" id="main-content" class="background">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <!-- <div>
+          <label for="wallHeight">Wall Height (cm):</label>
+          <input
+            id="wallHeight"
+            type="number"
+            [(ngModel)]="wallHeight"
+            (change)="convert2DTo3D()"
+          />
+        </div> -->
+        <!-- <div>
+          <label for="wallWidth">Wall Width (cm):</label>
+          <input
+            id="wallWidth"
+            type="number"
+            [(ngModel)]="wallWidth"
+            (change)="convert2DTo3D()"
+          />
+        </div> -->
+        <!-- <div>
+          <label for="doorHeight">Door Height (cm):</label>
+          <input
+            id="doorHeight"
+            type="number"
+            [(ngModel)]="doorHeight"
+            (change)="convert2DTo3D()"
+          />
+        </div>
+        <div>
+          <label for="Window Hieght">Window Height (cm)</label>
+          <input
+            type="number"
+            [(ngModel)]="windowHeight"
+            (change)="convert2DTo3D()"
+          />
+        </div> -->
+      </ion-col>
+      <ion-col>
+        <!-- roof colour. do not delete -->
+        <!-- <input
+          type="color"
+          [value]="currentRoofColor"
+          (change)="onRoofColorChange($event)"
+        /> -->
+        <!-- <ion-button (click)="resetColors()">Reset Colors</ion-button> -->
+      </ion-col>
+      <ion-col>
+        <div>{{generatedContent}}</div>
+        <ion-button (click)="generateContents()">Generate house</ion-button>
+      </ion-col>
+
+      <ion-col>
+        <ion-item>
+          <ion-label>Length Scale Factor</ion-label>
+          <ion-range
+            min="0.5"
+            max="2"
+            step="0.1"
+            [(ngModel)]="lengthScaleFactor"
+            (ionChange)="updateLengthScale()"
+          ></ion-range>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <!-- <ion-col>
+        <ion-button (click)="toggleGrid()" expand="block" size="small">
+          <ion-icon name="grid-outline"></ion-icon>
+          Grid
+        </ion-button>
+      </ion-col> -->
+      <!-- <ion-col>
+        <ion-button
+          (click)="setMode('wall')"
+          [class.selected]="currentMode === 'wall'"
+          expand="block"
+          >Draw Wall</ion-button
         >
-          <ion-menu-button></ion-menu-button>
+      </ion-col> -->
+      <!-- <ion-col>
+        <ion-button
+          (click)="setMode('window')"
+          [class.selected]="currentMode === 'window'"
+          expand="block"
+          >Draw Window</ion-button
+        >
+      </ion-col> -->
+      <!-- <ion-col>
+        <ion-button
+          (click)="setMode('door')"
+          [class.selected]="currentMode === 'door'"
+          expand="block"
+          >Draw Door</ion-button
+        >
+      </ion-col> -->
+      <!-- <ion-col>
+        <ion-button
+          (click)="setMode('select')"
+          [class.selected]="currentMode === null"
+          expand="block"
+          >Select Mode</ion-button
+        >
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="deleteSelected()">Delete Selected</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="drawSquare(this.segment1)">Draw Auto1</ion-button>
+        <ion-button (click)="drawSquare(this.segments2)">Draw Auto2</ion-button>
+      </ion-col> -->
+      <!-- <ion-col>
+        <ion-button (click)="onClearAllClick()">Clear Drawing</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="toggleDistanceLabels()">Toggle Labels</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="convert2DTo3D()">Convert to 3D</ion-button>
+      </ion-col> -->
+      <ion-col>
+        <ion-button *ngIf="isRoofVisible" (click)="toggleRoof()"
+          >Remove Roof</ion-button
+        >
+        <ion-button *ngIf="!isRoofVisible" (click)="toggleRoof()"
+          >Insert Roof</ion-button
+        >
+      </ion-col>
 
-          <ion-icon
-            name="ellipsis-vertical"
-            class="icon-size"
-            aria-hidden="true"
-          ></ion-icon>
-        </ion-buttons>
-        <ion-title>Menu</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <div>
-            <label for="wallHeight">Wall Height (cm):</label>
-            <input
-              id="wallHeight"
-              type="number"
-              [(ngModel)]="wallHeight"
-              (change)="convert2DTo3D()"
-            />
-          </div>
-          <div>
-            <label for="wallWidth">Wall Width (cm):</label>
-            <input
-              id="wallWidth"
-              type="number"
-              [(ngModel)]="wallWidth"
-              (change)="convert2DTo3D()"
-            />
-          </div>
-          <div>
-            <label for="doorHeight">Door Height (cm):</label>
-            <input
-              id="doorHeight"
-              type="number"
-              [(ngModel)]="doorHeight"
-              (change)="convert2DTo3D()"
-            />
-          </div>
-          <div>
-            <label for="Window Hieght">Window Height (cm)</label>
-            <input
-              type="number"
-              [(ngModel)]="windowHeight"
-              (change)="convert2DTo3D()"
-            />
-          </div>
-        </ion-col>
-        <ion-col>
-          <input
-            type="color"
-            [value]="currentWallColor"
-            (change)="onWallColorChange($event)"
-          />
-          <input
-            type="color"
-            [value]="currentDoorColor"
-            (change)="onDoorColorChange($event)"
-          />
-          <input
-            type="color"
-            [value]="currentWindowColor"
-            (change)="onWindowColorChange($event)"
-          />
-          <input
-            type="color"
-            [value]="currentRoofColor"
-            (change)="onRoofColorChange($event)"
-          />
-          <ion-button (click)="resetColors()">Reset Colors</ion-button>
-        </ion-col>
-        <ion-col>
-          <div>{{generatedContent}}</div>
-          <ion-button (click)="generateContents()">Generate house</ion-button>
-        </ion-col>
-        <ion-col>
-          <div>
-            <label for="scaleInput">Scale (pixels per meter):</label>
-            <input
-              id="scaleInput"
-              type="number"
-              [(ngModel)]="currentScale"
-              (change)="updateScale()"
-            />
-          </div>
-        </ion-col>
-        <ion-col>
-          <ion-item>
-            <ion-label>Length Scale Factor</ion-label>
-            <ion-range
-              min="0.5"
-              max="2"
-              step="0.1"
-              [(ngModel)]="lengthScaleFactor"
-              (ionChange)="updateLengthScale()"
-            ></ion-range>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <ion-button (click)="toggleGrid()" expand="block" size="small">
-            <ion-icon name="grid-outline"></ion-icon>
-            Grid
-          </ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button
-            (click)="setMode('wall')"
-            [class.selected]="currentMode === 'wall'"
-            expand="block"
-            >Draw Wall</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button
-            (click)="setMode('window')"
-            [class.selected]="currentMode === 'window'"
-            expand="block"
-            >Draw Window</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button
-            (click)="setMode('door')"
-            [class.selected]="currentMode === 'door'"
-            expand="block"
-            >Draw Door</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button
-            (click)="setMode('select')"
-            [class.selected]="currentMode === null"
-            expand="block"
-            >Select Mode</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="deleteSelected()">Delete Selected</ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="drawSquare(this.segment1)"
-            >Draw Auto1</ion-button
-          >
-          <ion-button (click)="drawSquare(this.segments2)"
-            >Draw Auto2</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="onClearAllClick()">Clear Drawing</ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="toggleDistanceLabels()"
-            >Toggle Labels</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="convert2DTo3D()">Convert to 3D</ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button *ngIf="isRoofVisible" (click)="toggleRoof()"
-            >Remove Roof</ion-button
-          >
-          <ion-button *ngIf="!isRoofVisible" (click)="toggleRoof()"
-            >Insert Roof</ion-button
-          >
-        </ion-col>
-
-        <ion-col>
-          <ion-button (click)="downloadFloorPlan()"
-            >Download Floor Plan</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <button (click)="export3DModel('stl')">
-            Download 3D Model (STL)
-          </button>
-          <button (click)="export3DModel('obj')">
-            Download 3D Model (OBJ)
-          </button>
-        </ion-col>
-        <!-- <ion-col>
+      <!-- <ion-col>
+        <ion-button (click)="downloadFloorPlan()"
+          >Download Floor Plan</ion-button
+        >
+      </ion-col> -->
+      <!-- <ion-col>
+        <button (click)="export3DModel('stl')">Download 3D Model (STL)</button>
+        <button (click)="export3DModel('obj')">Download 3D Model (OBJ)</button>
+      </ion-col> -->
+      <!-- <ion-col>
               <ion-button (click)="undo()">Undo</ion-button>
               <ion-button (click)="redo()">Redo</ion-button>
           </ion-col> -->
-        <!-- Additional buttons will be added here -->
-      </ion-row>
-    </ion-grid>
-    <!-- <div #threeContainer></div> -->
-  </div>
+      <!-- Additional buttons will be added here -->
+    </ion-row>
+  </ion-grid>
+
+  <!-- <div #threeContainer></div> -->
+
   <div>
     <div #container></div>
     <!-- <div #threeContainer></div> -->

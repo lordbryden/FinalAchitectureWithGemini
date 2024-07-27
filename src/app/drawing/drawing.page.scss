@@ -1,32 +1,89 @@
 ion-button.selected {
-    --background: var(--ion-color-primary-shade);
+  --background: var(--ion-color-primary-shade);
 }
 
 #container,
 #rendererContainer {
-    width: 100%;
-    height: calc(100% - 200px); // Adjust based on your button heights
+  width: 100%;
+  height: calc(100% - 200px); // Adjust based on your button heights
 }
 
 #threeContainer {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
+}
+
+.image-containers {
+  position: relative;
+  top: -60px;
+  // right: -40px;
+  // overflow: hidden;
+  border-radius: 0 0 75px 75px;
+
+  /* Adjust radius as needed */
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .image-container {
-    position: relative;
-    top: -40px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    // overflow: hidden;
-    border-radius: 500px;
-    /* Adjust radius as needed */
+  position: relative;
+  // top: -40px;
+  // right: -40px;
+  width: 100%;
+  height: auto;
+  // overflow: hidden;
+  border-radius: 500px;
+  /* Adjust radius as needed */
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .background {
-    --background: white;
+  --background: white;
 }
 
 .color-black {
-    color: #0a0a0a;
+  color: #0a0a0a;
+}
+.paddingr {
+  padding-right: 12px;
+}
+.flex {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 6px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.items {
+  flex: 1;
+  // width: 50%;
+}
+.right-menu-div {
+  margin: 16px;
+  margin-top: 30px;
+}
+.reset-button {
+  justify-content: center;
+  justify-self: center;
+  align-items: center;
+  align-self: center;
+  width: 100%;
+  margin-top: 16px;
+}
+.half-width-input {
+  width: 50%; /* Takes up half of the screen */
+  background-color: white; /* Sets background to white */
+  border: 1px solid black; /* Black border around the input */
+  padding: 8px; /* Optional padding for better appearance */
+  box-sizing: border-box; /* Includes padding and border in total width */
+  outline: none; /* Removes the default focus outline */
+  border-radius: 10px;
+  margin-left: 20px;
+  color: #0a0a0a;
+  // flex: 1;
+}
+.forInput {
+  // flex: 1;
+  margin-left: 10px;
 }
