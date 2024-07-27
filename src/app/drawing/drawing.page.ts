@@ -33,7 +33,8 @@ export class DrawingPage {
   private roof: THREE.Mesh | null = null;
   currentMode: 'wall' | 'window' | 'door' | 'select' | null = null;
   private walls: THREE.Mesh[] = [];
-
+  private dimentionToggle = false;
+  private gridToggle = false;
   public wallHeight: number = 4000; // 5 meters in centimeters
   public wallWidth: number = 300; // 30 centimeters
   public doorHeight: number = 2000; // 3 meters in centimeters
@@ -1370,7 +1371,73 @@ export class DrawingPage {
      * We refer to the menu using an ID
      * because multiple "start" menus exist.
      */
+
     this.menuCtrl.open('second-menu');
+  }
+
+  getDimensionsIcon() {
+    return this.dimentionToggle ? 'toggle-on' : 'toggle-off';
+  }
+
+  getGridIcon() {
+    return this.gridToggle ? 'toggle-on' : 'toggle-off';
+  }
+  closeSecondMenu() {
+    this.menuCtrl.close('second-menu');
+  }
+  openFirstMenu() {
+    /**
+     * Open the menu by menu-id
+     * We refer to the menu using an ID
+     * because multiple "start" menus exist.
+     */
+
+    this.menuCtrl.open('first-menu');
+  }
+  closeFirstMenu() {
+    this.menuCtrl.close('first-menu');
+  }
+  toggleGridMenu() {
+    this.toggleGrid();
+    this.closeFirstMenu();
+  }
+  selectDoor() {
+    this.setMode('door');
+    this.closeFirstMenu();
+  }
+  selectWindow() {
+    this.setMode('window');
+    this.closeFirstMenu();
+  }
+  selectWall() {
+    this.setMode('wall');
+    this.closeFirstMenu();
+  }
+  selectMode() {
+    this.setMode('select');
+    this.closeFirstMenu();
+  }
+  deleteMode() {
+    this.deleteSelected();
+    this.closeFirstMenu();
+  }
+  toggleDimentionMode() {
+    this.toggleDistanceLabels();
+    this.closeFirstMenu();
+    this.dimentionToggle = !this.dimentionToggle;
+  }
+  toggleGridMode() {
+    this.toggleGridMenu();
+    this.closeFirstMenu();
+    this.gridToggle = !this.gridToggle;
+  }
+  downloadPlan() {
+    this.downloadFloorPlan();
+    this.closeFirstMenu();
+  }
+  clearGrid() {
+    this.onClearAllClick();
+    this.closeFirstMenu();
   }
   ngOnInit() {
     this.initializeStage();
