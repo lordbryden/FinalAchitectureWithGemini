@@ -1346,6 +1346,8 @@ export class DrawingPage {
     },
   ];
   generatedContent: any = '';
+  message: string = '';
+  firstMenu: boolean = true;
   public lengthScaleFactor: number = 1.2;
   constructor(
     private gridService: GridService,
@@ -1364,6 +1366,13 @@ export class DrawingPage {
 
   updateScale() {
     this.drawingService.setScale(this.currentScale);
+  }
+  openMenu() {
+    if (this.firstMenu) {
+      this.openFirstMenu();
+    } else {
+      this.openSecondMenu();
+    }
   }
   openSecondMenu() {
     /**
@@ -1394,12 +1403,28 @@ export class DrawingPage {
 
     this.menuCtrl.open('first-menu');
   }
+  sendMessage() {
+    console.log('Message sent:', this.message);
+    // Implement your send logic here
+    this.message = '';
+  }
+
+  undo() {
+    console.log('Undo clicked');
+    // Implement your undo logic here
+  }
+
+  redo() {
+    console.log('Redo clicked');
+    // Implement your redo logic here
+  }
   closeFirstMenu() {
     this.menuCtrl.close('first-menu');
   }
   toggleGridMenu() {
     this.toggleGrid();
     this.closeFirstMenu();
+    this.gridToggle = !this.gridToggle;
   }
   selectDoor() {
     this.setMode('door');
@@ -1421,10 +1446,23 @@ export class DrawingPage {
     this.deleteSelected();
     this.closeFirstMenu();
   }
+  transformTo3D() {
+    this.convert2DTo3D();
+    this.closeFirstMenu();
+    this.firstMenu = !this.firstMenu;
+  }
+  roofPlacement() {
+    this.closeSecondMenu();
+    this.toggleRoof();
+  }
   toggleDimentionMode() {
     this.toggleDistanceLabels();
     this.closeFirstMenu();
     this.dimentionToggle = !this.dimentionToggle;
+  }
+  transformTo2D() {
+    this.closeSecondMenu();
+    this.firstMenu = !this.firstMenu;
   }
   toggleGridMode() {
     this.toggleGridMenu();

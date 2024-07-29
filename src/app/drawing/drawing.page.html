@@ -3,6 +3,7 @@
   contentId="main-content"
   menuId="first-menu"
   class="background"
+  swipeGesture="false"
 >
   <ion-content class="ion-padding" class="background">
     <div class="image-container" class="background">
@@ -64,7 +65,7 @@
         class="color-black"
         slot="start"
       ></fa-icon>
-      <ion-text class="color-black" (click)="convert2DTo3D()"
+      <ion-text class="color-black" (click)="transformTo3D()"
         >3D Image</ion-text
       >
     </ion-item>
@@ -122,16 +123,33 @@
     </ion-item>
   </ion-content>
 </ion-menu>
-<ion-menu side="end" menuId="second-menu" contentId="main-content">
+<ion-menu
+  side="end"
+  menuId="second-menu"
+  contentId="main-content"
+  swipeGesture="false"
+>
   <ion-content class="ion-padding" class="background">
-    <ion-button (click)="resetColors()" class="reset-button"
-      >Reset Colors</ion-button
-    >
+    <div class="image-container" class="background">
+      <img src="/assets/second.jpg" alt="Half Image" class="image-containers" />
+    </div>
+    <div class="adjustments color-black">3D adjustments</div>
     <div class="right-menu-div">
+      <div class="flex">
+        <ion-label class="color-black items">Length Scale Factor</ion-label>
+        <ion-range
+          min="0.5"
+          max="2"
+          class="items half-width-input no-border"
+          step="0.1"
+          [(ngModel)]="lengthScaleFactor"
+          (ionChange)="updateLengthScale()"
+        ></ion-range>
+      </div>
       <div class="flex">
         <label class="color-black items">Wall color (cm):</label>
         <input
-          class="items"
+          class="items half-width-input no-border"
           fill="outline"
           maxlength="1"
           type="color"
@@ -140,11 +158,33 @@
         />
       </div>
       <div class="flex">
+        <label class="color-black items">Door colour:</label>
+        <input
+          class="items half-width-input no-border"
+          fill="outline"
+          maxlength="1"
+          type="color"
+          [value]="currentDoorColor"
+          (change)="onDoorColorChange($event)"
+        />
+      </div>
+      <div class="flex">
+        <label class="color-black items">Window color (cm):</label>
+        <input
+          class="items half-width-input no-border"
+          fill="outline"
+          maxlength="1"
+          type="color"
+          [value]="currentWindowColor"
+          (change)="onWindowColorChange($event)"
+        />
+      </div>
+      <div class="flex">
         <label class="color-black items" for="wallWidth"
           >Wall Width (cm):</label
         >
         <input
-          class="items"
+          class="items half-width-input"
           id="wallWidth"
           maxlength="10"
           type="number"
@@ -157,7 +197,7 @@
           >Wall Height (cm):</label
         >
         <input
-          class="items"
+          class="items half-width-input"
           width=""
           id="wallWidth"
           maxlength="10"
@@ -169,22 +209,11 @@
       </div>
 
       <div class="flex">
-        <label class="color-black items">Door colour:</label>
-        <input
-          class="items"
-          fill="outline"
-          maxlength="1"
-          type="color"
-          [value]="currentDoorColor"
-          (change)="onDoorColorChange($event)"
-        />
-      </div>
-      <div class="flex">
         <label for="wallHeight" class="color-black items"
           >Wall Height (cm):</label
         >
         <input
-          class="items background"
+          class="items background half-width-input"
           maxlength="10"
           id="doorHeight"
           type="number"
@@ -192,24 +221,14 @@
           (change)="convert2DTo3D()"
         />
       </div>
-      <div class="flex">
-        <label class="color-black items">Window color (cm):</label>
-        <input
-          class="items"
-          fill="outline"
-          maxlength="1"
-          type="color"
-          [value]="currentWindowColor"
-          (change)="onWindowColorChange($event)"
-        />
-      </div>
+
       <div class="flex">
         <label for="Window Hieght" class="color-black items"
           >Window Height (cm)</label
         >
 
         <input
-          class="items background"
+          class="items background half-width-input"
           maxlength="10"
           id="doorHeight"
           type="number"
@@ -217,27 +236,54 @@
           (change)="convert2DTo3D()"
         />
       </div>
+      >
+      <ion-button
+        (click)="resetColors()"
+        fill="outline"
+        color="primary"
+        class="reset-button"
+        >Reset Colors</ion-button
+      >
+
+      <ion-button
+        (click)="roofPlacement()"
+        *ngIf="isRoofVisible"
+        color="primary"
+        class="reset-button"
+        fill="outline"
+        >Remove roof</ion-button
+      >
+      <ion-button
+        (click)="roofPlacement()"
+        *ngIf="!isRoofVisible"
+        color="primary"
+        fill="outline"
+        class="reset-button"
+        >Remove roof</ion-button
+      >
+
+      <ion-button
+        (click)="transformTo2D()"
+        fill="outline"
+        color="primary"
+        class="reset-button"
+        >go to floor plan</ion-button
+      >
     </div>
   </ion-content>
 </ion-menu>
 
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start" class="ion-padding">
-      <!-- <ion-back-button>s</ion-back-button> -->
+    <ion-buttons slot="start" class="custom-back-button">
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end" class="background paddingr">
       <ion-icon
-        name="ellipsis-vertical"
+        name="menu"
         class="icon-size"
         aria-hidden="true"
-        (click)="openFirstMenu()"
-      ></ion-icon>
-      <ion-icon
-        name="ellipsis-vertical"
-        class="icon-size"
-        aria-hidden="true"
-        (click)="openSecondMenu()"
+        (click)="openMenu()"
       ></ion-icon>
     </ion-buttons>
     <ion-title>Menu</ion-title>
@@ -293,11 +339,11 @@
         /> -->
         <!-- <ion-button (click)="resetColors()">Reset Colors</ion-button> -->
       </ion-col>
-      <ion-col>
+      <!-- <ion-col>
         <div>{{generatedContent}}</div>
         <ion-button (click)="generateContents()">Generate house</ion-button>
-      </ion-col>
-
+      </ion-col> -->
+      <!--
       <ion-col>
         <ion-item>
           <ion-label>Length Scale Factor</ion-label>
@@ -309,7 +355,7 @@
             (ionChange)="updateLengthScale()"
           ></ion-range>
         </ion-item>
-      </ion-col>
+      </ion-col> -->
     </ion-row>
   </ion-grid>
   <ion-grid>
@@ -368,14 +414,14 @@
       <ion-col>
         <ion-button (click)="convert2DTo3D()">Convert to 3D</ion-button>
       </ion-col> -->
-      <ion-col>
+      <!-- <ion-col>
         <ion-button *ngIf="isRoofVisible" (click)="toggleRoof()"
           >Remove Roof</ion-button
         >
         <ion-button *ngIf="!isRoofVisible" (click)="toggleRoof()"
           >Insert Roof</ion-button
         >
-      </ion-col>
+      </ion-col> -->
 
       <!-- <ion-col>
         <ion-button (click)="downloadFloorPlan()"
@@ -402,3 +448,63 @@
     <div #threeContainer style="width: 100%; height: 100vh"></div>
   </div>
 </ion-content>
+<!-- <ion-footer class="ion-no-border">
+  sdafas
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="primary" (click)="undo()">
+        <ion-icon name="arrow-undo-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-textarea
+      [(ngModel)]="message"
+      placeholder="Type a message..."
+      autoGrow="true"
+      rows="1"
+    ></ion-textarea>
+    <ion-buttons slot="end">
+      <ion-button
+        (click)="sendMessage()"
+        [disabled]="!message.trim()"
+        color="primary"
+      >
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+      <ion-button (click)="redo()">
+        <ion-icon name="arrow-redo-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer> -->
+
+<ion-footer>
+  <ion-toolbar class="fotter-color">
+    <ion-buttons slot="start">
+      <ion-button color="primary" (click)="undo()">
+        <ion-icon name="arrow-undo-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <div class="input-container">
+      <ion-textarea
+        class="text-area"
+        [(ngModel)]="message"
+        placeholder="Type a message..."
+        autoGrow="true"
+        rows="1"
+      ></ion-textarea>
+      <ion-button
+        fill="clear"
+        (click)="sendMessage()"
+        [disabled]="!message.trim()"
+        class="send-button"
+      >
+        <ion-icon name="send" color="primary"></ion-icon>
+      </ion-button>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="redo()">
+        <ion-icon name="arrow-redo-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
