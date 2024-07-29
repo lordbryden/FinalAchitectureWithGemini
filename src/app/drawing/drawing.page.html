@@ -296,13 +296,8 @@
       <ion-col>
         <!-- <div>
           <label for="wallHeight">Wall Height (cm):</label>
-          <input
-            id="wallHeight"
-            type="number"
-            [(ngModel)]="wallHeight"
-            (change)="convert2DTo3D()"
-          />
-        </div> -->
+                <input id="wallHeight" type="number" [(ngModel)]="wallHeight" (change)="convert2DTo3D()" />
+            </div> -->
         <!-- <div>
           <label for="wallWidth">Wall Width (cm):</label>
           <input
@@ -436,10 +431,14 @@
               <ion-button (click)="undo()">Undo</ion-button>
               <ion-button (click)="redo()">Redo</ion-button>
           </ion-col> -->
+      <ion-col>
+        <ion-button (click)="saveDrawing()">Save Drawing</ion-button>
+      </ion-col>
       <!-- Additional buttons will be added here -->
     </ion-row>
   </ion-grid>
 
+  <!-- <ion-alert trigger="present-alert" header="Please enter your info" [buttons]="alertButtons" [inputs]="alertInputs"></ion-alert> -->
   <!-- <div #threeContainer></div> -->
 
   <div>
