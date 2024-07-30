@@ -273,20 +273,23 @@
   </ion-content>
 </ion-menu>
 
-<ion-header>
-  <ion-toolbar>
+<ion-header class="background">
+  <ion-toolbar class="background">
     <ion-buttons slot="start" class="custom-back-button">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button
+        class="color-black"
+        defaultHref="/home"
+      ></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end" class="background paddingr">
+    <ion-buttons slot="end" class="color-black" class="background paddingr">
       <ion-icon
         name="menu"
-        class="icon-size"
+        class="icon-size color-black"
         aria-hidden="true"
         (click)="openMenu()"
       ></ion-icon>
     </ion-buttons>
-    <ion-title>Design</ion-title>
+    <ion-title class="color-black">Design</ion-title>
   </ion-toolbar>
 </ion-header>
 
