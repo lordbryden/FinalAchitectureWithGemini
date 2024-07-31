@@ -3,9 +3,10 @@
         <div class="image-container" class="background">
             <img src="/assets/first.jpg" alt="Half Image" class="image-containers" />
         </div>
+
         <div class="flex">
             <label for="scaleInput" class="color-black forInput">Scale</label>
-            <input id="scaleInput" type="number" [(ngModel)]="currentScale" (change)="updateScale()" class="half-width-input" />
+            <input id="scaleInput" [value]="drawingService.getScale()" type="number" [(ngModel)]="currentScale" (change)="updateScale()" class="half-width-input" />
         </div>
 
         <ion-item class="background" lines="none" (click)="selectDoor()" [class.selected]="currentMode === 'door'">
@@ -129,6 +130,7 @@
     <ion-buttons slot="start" class="ion-padding">
       <!-- <ion-back-button>s</ion-back-button> -->
     </ion-buttons>
+
     <ion-buttons slot="end" class="background paddingr">
       <ion-icon
         name="ellipsis-vertical"
@@ -193,13 +195,18 @@
             </ion-col>
             <ion-col>
                 <div>{{generatedContent}}</div>
-                <ion-button (click)="generateContents()">Generate house</ion-button>
+                <ion-button (click)="runModel()">Generate house</ion-button>
             </ion-col>
+            <ion-col>
+                <ion-buttons>
+                    <ion-button (click)="backToHome()">Back</ion-button>
 
+                </ion-buttons>
+            </ion-col>
             <ion-col>
                 <ion-item>
                     <ion-label>Length Scale Factor</ion-label>
-                    <ion-range min="0.5" max="2" step="0.1" [(ngModel)]="lengthScaleFactor" (ionChange)="updateLengthScale()"></ion-range>
+                    <ion-range min="0.5" max="2.3" step="0.1" [(ngModel)]="lengthScaleFactor" (ionChange)="updateLengthScale()"></ion-range>
                 </ion-item>
             </ion-col>
             </ion-row>
@@ -266,8 +273,16 @@
                     </ion-col>
                     <ion-col>
                         <ion-button (click)="drawSquare(this.segment1)">Draw Auto1</ion-button>
-                        <ion-button (click)="drawSquare(this.segments2)">Draw Auto2</ion-button>
+                        <ion-button (click)="drawSquare(this.segment2)">Draw Auto3</ion-button>
                     </ion-col>
+                    <!-- <ion-col>
+                        <button (click)="rotateCounterclockwise()">
+                        <i class="fas fa-undo"></i> Rotate 90° CCW
+                      </button>
+                        <button (click)="rotateClockwise()">
+                        <i class="fas fa-redo"></i> Rotate 90° CW
+                      </button>
+                    </ion-col> -->
 
                     <!-- <ion-col>
         <ion-button (click)="downloadFloorPlan()"

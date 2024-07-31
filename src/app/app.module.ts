@@ -14,7 +14,9 @@ import { ThreeDService } from './services/three-d.service';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-
+import {  HttpClientModule } from '@angular/common/http';
+import { AuthService } from './services/auth.service';
+import { OAuthModule } from 'angular-oauth2-oidc'; // Import the OAuthModule
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -22,11 +24,14 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
     IonicModule.forRoot(),
     AppRoutingModule,
     FontAwesomeModule,
+    HttpClientModule,
+    OAuthModule.forRoot(), // Include the OAuthModule here
+
   ],
   providers: [
     ThreeDService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-  ],
+    AuthService,
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy  }  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

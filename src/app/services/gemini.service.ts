@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { environment } from 'src/environments/environment';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeminiService {
-  private genAI: GoogleGenerativeAI;
-  constructor() {
-    this.genAI = new GoogleGenerativeAI(environment.GeminiKey);
-  }
+  private apiUrl = 'https://api.gemini.com/v1/your-endpoint';
 
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  async generateContent(prompt: string): Promise<string> {
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+  async callModel(inputData: any): Promise<any> {
+    const token = await this.authService.getAccessToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.post(this.apiUrl, inputData, { headers }).toPromise();
   }
 }

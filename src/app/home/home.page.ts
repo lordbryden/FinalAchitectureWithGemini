@@ -6,7 +6,8 @@ import { GridService } from '../services/grid.service';
 import Konva from 'konva';
 import { Router } from '@angular/router';
 import { SaveDrawingService } from '../services/save-drawing.service';
-
+import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { AlertController, Platform } from '@ionic/angular';
 
 interface Design {
   id: string;
@@ -36,7 +37,12 @@ export class HomePage {
 
   previousDesigns: Design[] = [];
   savedDrawings: any;
-  constructor(private router : Router , private drawingService: DrawingService , private saveService : SaveDrawingService) {}
+  constructor(private router : Router ,
+    private drawingService: DrawingService ,
+    private saveService : SaveDrawingService,
+   private platform : Platform,
+   private alertController : AlertController
+  ) {}
   // Do not touch this commented code abeg
 
   // private drawDoor(
@@ -277,7 +283,13 @@ export class HomePage {
     });
   }
 
-  goToDesign(id : any){
+  async goToDesign(id : any){
+
+    // if(this.platform.is('android') || this.platform.is('ios')){
+    //   await ScreenOrientation.lock({ orientation: 'landscape' });
+
+    // }
     this.router.navigate(['/drawing', id]);
   }
+
 }

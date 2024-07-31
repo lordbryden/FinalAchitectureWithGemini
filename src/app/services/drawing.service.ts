@@ -24,7 +24,7 @@ export class DrawingService {
   private shapes: Array<{ shape: Konva.Shape | Konva.Group, startCircle: Konva.Circle, endCircle: Konva.Circle }> = [];
   private selectionRect: Konva.Rect | null = null;
   private selectedShapes: Set<Konva.Shape | Konva.Group> = new Set();
-  private pixelsPerMeter = 30; // Adjust this value based on your needs
+  private pixelsPerMeter = 17 ; // Adjust this value based on your needs
 
   private selectionBoundingRect: Konva.Rect | null = null;
   private dragLayer!: Konva.Layer;
@@ -35,6 +35,10 @@ export class DrawingService {
    private distanceLabelsVisible: boolean = true;
    private scaleFactor: number = 1; // 1 unit = 1 meter by default
 
+   private lastCenter: Konva.Vector2d | null = null;
+   private lastDist: number = 0;
+   private previousMode: 'wall' | 'window' | 'door' | 'select' | 'adjust' | null = null;
+   private selectionStartPos: Konva.Vector2d | null = null;
 
   constructor() {
     this.layer = new Konva.Layer();
@@ -45,13 +49,14 @@ export class DrawingService {
   setStage(stage: Konva.Stage) {
     stage.add(this.layer);
     stage.add(this.dragLayer);
-
+    this.handlePinchZoom(stage);
   }
   get isDragging(): boolean {
     return this._isDragging;
   }
   setScale(pixelsPerMeter: number) {
-    if (pixelsPerMeter > 0) {
+    const minPixelsPerMeter = 5; // Set this to whatever minimum value you want
+    if (pixelsPerMeter > minPixelsPerMeter) {
       const scaleFactor = pixelsPerMeter / this.pixelsPerMeter;
       this.pixelsPerMeter = pixelsPerMeter;
       this.updateAllShapesAndMeasurements(scaleFactor);
@@ -67,6 +72,15 @@ export class DrawingService {
 
   getScaleFactor() {
     return this.scaleFactor;
+  }
+  setMode(mode: 'wall' | 'window' | 'door' | 'select' | 'adjust' | null) {
+    this.currentMode = mode;
+    this.updateShapesDraggable();
+
+    // If mode is not null, update previousMode
+    if (mode !== null) {
+      this.previousMode = mode;
+    }
   }
   private updateAllShapesAndMeasurements(scaleFactor: number) {
     this.shapes.forEach(shapeInfo => {
@@ -315,6 +329,8 @@ export class DrawingService {
       }
     }
   }
+
+
   public updateMeasurements(shape: Konva.Shape | Konva.Group, start: Konva.Vector2d, end: Konva.Vector2d) {
     const dx = end.x - start.x;
     const dy = end.y - start.y;
@@ -411,6 +427,7 @@ export class DrawingService {
     return false;
   }
 
+
   getLayer(): Konva.Layer {
     return this.layer;
   }
@@ -501,7 +518,22 @@ export class DrawingService {
     return null;
   }
 
+  endSelection() {
+    if (!this.selectionRect) return;
 
+    const box = {
+      x1: this.selectionRect.x(),
+      y1: this.selectionRect.y(),
+      x2: this.selectionRect.x() + this.selectionRect.width(),
+      y2: this.selectionRect.y() + this.selectionRect.height()
+    };
+
+    this.selectShapesInRectangle(box);
+    this.selectionRect.destroy();
+    this.selectionRect = null;
+    this.selectionStartPos = null;
+    this.layer.batchDraw();
+  }
 
   private updateShapesDraggable() {
     const isDraggable = this.currentMode !== 'wall' && this.currentMode !== 'window' && this.currentMode !== 'door';
@@ -510,46 +542,6 @@ export class DrawingService {
       shapeInfo.endCircle.draggable(isDraggable);
     });
   }
-  setMode(mode: 'wall' | 'window' | 'door' | 'select' | 'adjust' | null) {
-    this.currentMode = mode;
-    this.updateShapesDraggable();
-  }
-
-
-
-
-
-  updateSelection(pos: Konva.Vector2d) {
-    if (!this.selectionRect) return;
-
-    const startX = this.selectionRect.x();
-    const startY = this.selectionRect.y();
-
-    let width = pos.x - startX;
-    let height = pos.y - startY;
-
-    let newX = startX;
-    let newY = startY;
-
-    if (width < 0) {
-      width = Math.abs(width);
-      newX = pos.x;
-    }
-
-    if (height < 0) {
-      height = Math.abs(height);
-      newY = pos.y;
-    }
-
-    this.selectionRect.x(newX);
-    this.selectionRect.y(newY);
-    this.selectionRect.width(width);
-    this.selectionRect.height(height);
-
-    this.layer.batchDraw();
-  }
-
-
 
   private isCircleIntersectingBox(circle: Konva.Circle, box: {x1: number, y1: number, x2: number, y2: number}): boolean {
     const cx = circle.x();
@@ -628,28 +620,74 @@ export class DrawingService {
   }
 
 
-  startSelection(pos: Konva.Vector2d) {
-    this.selectionRect = new Konva.Rect({
-      x: pos.x,
-      y: pos.y,
-      width: 0,
-      height: 0,
-      fill: 'rgba(0, 0, 255, 0.3)',
-      stroke: 'blue',
-      strokeWidth: 1
+  updateSelection(pos: Konva.Vector2d) {
+    if (!this.selectionRect || !this.selectionStartPos) return;
+
+    const x = Math.min(this.selectionStartPos.x, pos.x);
+    const y = Math.min(this.selectionStartPos.y, pos.y);
+    const width = Math.abs(pos.x - this.selectionStartPos.x);
+    const height = Math.abs(pos.y - this.selectionStartPos.y);
+
+    this.selectionRect.setAttrs({
+      x: x,
+      y: y,
+      width: width,
+      height: height
     });
-    this.layer.add(this.selectionRect);
-  }
 
-
-  endSelection() {
-    if (!this.selectionRect) return;
-
-    this.selectShapesInRectangle(this.selectionRect);
-    this.selectionRect.destroy();
-    this.selectionRect = null;
     this.layer.batchDraw();
   }
+
+
+
+
+  private selectShapesInRectangle(box: {x1: number, y1: number, x2: number, y2: number}) {
+    // Clear current selection
+    this.clearSelection();
+
+    // Select shapes
+    this.shapes.forEach(shapeInfo => {
+      const shape = shapeInfo.shape;
+      let selected = false;
+
+      if (shape instanceof Konva.Line) {
+        selected = this.isLineIntersectingBox(shape.points(), box);
+      } else if (shape instanceof Konva.Group) {
+        selected = this.isGroupIntersectingBox(shape, box);
+      }
+
+      // Check start and end circles
+      if (!selected) {
+        selected = this.isCircleIntersectingBox(shapeInfo.startCircle, box) ||
+                   this.isCircleIntersectingBox(shapeInfo.endCircle, box);
+      }
+
+      if (selected) {
+        this.selectedShapes.add(shape);
+        this.highlightShape(shape);
+        // Also select the start and end circles
+        this.selectedShapes.add(shapeInfo.startCircle);
+        this.selectedShapes.add(shapeInfo.endCircle);
+        this.highlightShape(shapeInfo.startCircle);
+        this.highlightShape(shapeInfo.endCircle);
+      }
+    });
+
+    // Select standalone circles (dots)
+    this.layer.getChildren((node) => {
+      if (node instanceof Konva.Circle && !this.selectedShapes.has(node)) {
+        if (this.isCircleIntersectingBox(node, box)) {
+          this.selectedShapes.add(node);
+          this.highlightShape(node);
+        }
+      }
+      return false;  // Continue iteration
+    });
+
+    this.updateSelectionRectangle();
+    this.layer.batchDraw();
+  }
+
 
   clearAllDrawings() {
     // Remove all shapes and their associated elements
@@ -700,11 +738,23 @@ export class DrawingService {
 
 
 
+  startSelection(pos: Konva.Vector2d) {
+    this.selectionStartPos = pos;
+    this.selectionRect = new Konva.Rect({
+      x: pos.x,
+      y: pos.y,
+      width: 0,
+      height: 0,
+      fill: 'rgba(0, 0, 255, 0.3)',
+      stroke: 'blue',
+      strokeWidth: 1
+    });
+    this.layer.add(this.selectionRect);
+  }
 
 
 
-
-  private getOriginalColor(shape: Konva.Shape): string {
+  private getOriginalColor(shape: Konva.Shape | Konva.Group): string {
     switch (this.getShapeType(shape)) {
       case 'wall':
         return 'black';
@@ -730,20 +780,20 @@ export class DrawingService {
     }
     return 'unknown';
   }
-  private highlightShape(shape: Konva.Shape | Konva.Group) {
-    if (shape instanceof Konva.Line) {
-      shape.stroke('blue');
-    } else if (shape instanceof Konva.Group) {
-      shape.getChildren().forEach(child => {
-        if (child instanceof Konva.Shape) {
-          child.stroke('blue');
-        }
-      });
-    } else if (shape instanceof Konva.Circle) {
-      shape.stroke('blue');
-    }
-    this.updateSelectionRectangle();
-  }
+  // private highlightShape(shape: Konva.Shape | Konva.Group) {
+  //   if (shape instanceof Konva.Line) {
+  //     shape.stroke('blue');
+  //   } else if (shape instanceof Konva.Group) {
+  //     shape.getChildren().forEach(child => {
+  //       if (child instanceof Konva.Shape) {
+  //         child.stroke('blue');
+  //       }
+  //     });
+  //   } else if (shape instanceof Konva.Circle) {
+  //     shape.stroke('blue');
+  //   }
+  //   this.updateSelectionRectangle();
+  // }
 
 
   private updateSelectionRectangle() {
@@ -811,74 +861,81 @@ export class DrawingService {
     }
     this.layer.batchDraw();
   }
-  private selectShapesInRectangle(rect: Konva.Rect) {
-    const selectBox = {
-      x1: Math.min(rect.x(), rect.x() + rect.width()),
-      y1: Math.min(rect.y(), rect.y() + rect.height()),
-      x2: Math.max(rect.x(), rect.x() + rect.width()),
-      y2: Math.max(rect.y(), rect.y() + rect.height())
-    };
+  continueDragging(pos: Konva.Vector2d) {
+    if (this._isDragging && this.dragStartPosition) {
+      const dx = pos.x - this.dragStartPosition.x;
+      const dy = pos.y - this.dragStartPosition.y;
 
-    // Clear current selection
-    this.clearSelection();
+      this.selectedShapes.forEach(shape => {
+        shape.move({x: dx, y: dy});
 
-    // Select shapes
-    this.shapes.forEach(shapeInfo => {
-      const shape = shapeInfo.shape;
-      let selected = false;
+        const shapeInfo = this.shapes.find(s => s.shape === shape);
+        if (shapeInfo) {
+          if (!this.selectedShapes.has(shapeInfo.startCircle)) {
+            shapeInfo.startCircle.move({x: dx, y: dy});
+          }
+          if (!this.selectedShapes.has(shapeInfo.endCircle)) {
+            shapeInfo.endCircle.move({x: dx, y: dy});
+          }
 
-      if (shape instanceof Konva.Line) {
-        selected = this.isLineIntersectingBox(shape.points(), selectBox);
-      } else if (shape instanceof Konva.Group) {
-        selected = this.isGroupIntersectingBox(shape, selectBox);
-      }
+          if (this.getShapeType(shape) === 'window') {
+            this.updateWindowGeometry(shape as Konva.Group, shapeInfo.startCircle, shapeInfo.endCircle);
+          }
 
-      // Check start and end circles
-      if (!selected) {
-        selected = this.isCircleIntersectingBox(shapeInfo.startCircle, selectBox) ||
-                   this.isCircleIntersectingBox(shapeInfo.endCircle, selectBox);
-      }
-
-      if (selected) {
-        this.selectedShapes.add(shape);
-        this.highlightShape(shape);
-        // Also select the start and end circles
-        this.selectedShapes.add(shapeInfo.startCircle);
-        this.selectedShapes.add(shapeInfo.endCircle);
-        this.highlightShape(shapeInfo.startCircle);
-        this.highlightShape(shapeInfo.endCircle);
-      }
-    });
-
-    // Select standalone circles (dots)
-    this.layer.getChildren((node) => {
-      if (node instanceof Konva.Circle && !this.selectedShapes.has(node)) {
-        if (this.isCircleIntersectingBox(node, selectBox)) {
-          this.selectedShapes.add(node);
-          this.highlightShape(node);
+          const measurementGroup = this.layer.findOne(`#measurement-${shape._id}`) as Konva.Group;
+          if (measurementGroup) {
+            measurementGroup.move({x: dx, y: dy});
+          }
+          this.updateMeasurements(shape, shapeInfo.startCircle.position(), shapeInfo.endCircle.position());
         }
-      }
-      return false;  // Continue iteration
-    });
+      });
 
-    this.updateSelectionRectangle();
-    this.layer.batchDraw();
+      if (this.selectionBoundingRect) {
+        this.selectionBoundingRect.move({x: dx, y: dy});
+      }
+
+      this.dragStartPosition = pos;
+      this.dragLayer.batchDraw();
+      this.layer.batchDraw();
+    }
   }
 
   private unhighlightShape(shape: Konva.Shape | Konva.Group) {
+    const originalColor = shape.getAttr('originalColor') || this.getOriginalColor(shape);
+
     if (shape instanceof Konva.Line) {
-      shape.stroke(this.getOriginalColor(shape));
+      shape.stroke(originalColor);
     } else if (shape instanceof Konva.Group) {
       shape.getChildren().forEach(child => {
         if (child instanceof Konva.Shape) {
-          child.stroke(this.getOriginalColor(child));
+          child.stroke(originalColor);
         }
       });
     } else if (shape instanceof Konva.Circle) {
-      shape.stroke('black');  // Assuming black is the original color for circles
+      shape.stroke(originalColor);
     }
-    this.updateSelectionRectangle();
   }
+
+  private highlightShape(shape: Konva.Shape | Konva.Group) {
+    const originalColor = this.getOriginalColor(shape);
+    const highlightColor = 'blue';
+
+    if (shape instanceof Konva.Line) {
+      shape.stroke(highlightColor);
+    } else if (shape instanceof Konva.Group) {
+      shape.getChildren().forEach(child => {
+        if (child instanceof Konva.Shape) {
+          child.stroke(highlightColor);
+        }
+      });
+    } else if (shape instanceof Konva.Circle) {
+      shape.stroke(highlightColor);
+    }
+
+    // Store the original color for later use
+    shape.setAttr('originalColor', originalColor);
+  }
+
 
   startDragging(pos: Konva.Vector2d) {
     if (this.selectedShapes.size > 0) {
@@ -897,47 +954,72 @@ export class DrawingService {
       this.dragLayer.batchDraw();
     }
   }
+  private updateWindowGeometry(windowGroup: Konva.Group, startCircle: Konva.Circle, endCircle: Konva.Circle) {
+    const startPos = startCircle.position();
+    const endPos = endCircle.position();
 
-  continueDragging(pos: Konva.Vector2d) {
-    if (this._isDragging && this.dragStartPosition) {
-      const dx = pos.x - this.dragStartPosition.x;
-      const dy = pos.y - this.dragStartPosition.y;
+    const dx = endPos.x - startPos.x;
+    const dy = endPos.y - startPos.y;
+    const angle = Math.atan2(dy, dx);
+    const length = Math.sqrt(dx * dx + dy * dy);
 
-      // Move all selected shapes and their associated elements as a group
+    windowGroup.rotation(angle * 180 / Math.PI);
+    windowGroup.position(startPos);
+
+    const offset = 5; // Half of the window thickness
+    const children = windowGroup.getChildren();
+
+    children.forEach((child, index) => {
+      if (child instanceof Konva.Line) {
+        const sign = index === 0 ? 1 : -1;
+        child.points([0, sign * offset, length, sign * offset]);
+      }
+    });
+  }
+
+  stopDragging() {
+    if (this._isDragging) {
+      this._isDragging = false;
+      this.dragStartPosition = null;
+
       this.selectedShapes.forEach(shape => {
-        // Move the main shape
-        shape.move({x: dx, y: dy});
+        shape.moveTo(this.layer);
 
-        // Find and move associated circles and measurement displays
         const shapeInfo = this.shapes.find(s => s.shape === shape);
         if (shapeInfo) {
-          // Move start and end circles if they're not already in the selectedShapes set
-          if (!this.selectedShapes.has(shapeInfo.startCircle)) {
-            shapeInfo.startCircle.move({x: dx, y: dy});
-          }
-          if (!this.selectedShapes.has(shapeInfo.endCircle)) {
-            shapeInfo.endCircle.move({x: dx, y: dy});
+          shapeInfo.startCircle.moveTo(this.layer);
+          shapeInfo.endCircle.moveTo(this.layer);
 
+          const startPos = shapeInfo.startCircle.position();
+          const endPos = shapeInfo.endCircle.position();
+
+          if (shape instanceof Konva.Line) {
+            shape.points([startPos.x, startPos.y, endPos.x, endPos.y]);
+            shape.position({x: 0, y: 0});
+          } else if (shape instanceof Konva.Group) {
+            if (this.getShapeType(shape) === 'window') {
+              this.updateWindowGeometry(shape, shapeInfo.startCircle, shapeInfo.endCircle);
+            } else if (this.getShapeType(shape) === 'door') {
+              // Update door geometry (existing code)
+            }
           }
 
-          // Move measurement displays
-          const measurementGroup = this.layer.findOne(`#measurement-${shape._id}`) as Konva.Group;
-          if (measurementGroup) {
-            measurementGroup.move({x: dx, y: dy});
-          }
           this.updateMeasurements(shape, shapeInfo.startCircle.position(), shapeInfo.endCircle.position());
+        }
 
+        const measurementGroup = this.dragLayer.findOne(`#measurement-${shape._id}`) as Konva.Group;
+        if (measurementGroup) {
+          measurementGroup.moveTo(this.layer);
         }
       });
 
       if (this.selectionBoundingRect) {
-        this.selectionBoundingRect.move({x: dx, y: dy});
+        this.selectionBoundingRect.moveTo(this.layer);
       }
 
-
-      this.dragStartPosition = pos;
-      this.dragLayer.batchDraw();
+      this.updateSelectionRectangle();
       this.layer.batchDraw();
+      this.dragLayer.batchDraw();
     }
   }
 
@@ -979,84 +1061,7 @@ export class DrawingService {
     // Redraw the layer
     this.layer.batchDraw();
   }
-  stopDragging() {
-  if (this._isDragging) {
-    this._isDragging = false;
-    this.dragStartPosition = null;
 
-    this.selectedShapes.forEach(shape => {
-      shape.moveTo(this.layer);
-
-      const shapeInfo = this.shapes.find(s => s.shape === shape);
-      if (shapeInfo) {
-        // Move circles back to the main layer
-        shapeInfo.startCircle.moveTo(this.layer);
-        shapeInfo.endCircle.moveTo(this.layer);
-
-        const startPos = shapeInfo.startCircle.position();
-        const endPos = shapeInfo.endCircle.position();
-
-        if (shape instanceof Konva.Line) {
-          // Update the line's points directly
-          shape.points([startPos.x, startPos.y, endPos.x, endPos.y]);
-          shape.position({x: 0, y: 0}); // Reset position to (0, 0)
-        } else if (shape instanceof Konva.Group) {
-          // For groups (windows and doors)
-          const dx = endPos.x - startPos.x;
-          const dy = endPos.y - startPos.y;
-          const angle = Math.atan2(dy, dx);
-          const length = Math.sqrt(dx * dx + dy * dy);
-
-          shape.position(startPos);
-          if (this.getShapeType(shape) === 'window') {
-            shape.rotation(angle * 180 / Math.PI);
-          }
-
-          const children = shape.getChildren();
-          children.forEach(child => {
-            if (child instanceof Konva.Line) {
-              if (this.getShapeType(shape) === 'window') {
-                // For windows, update both lines
-                const offset = 5;
-                const perpAngle = angle + Math.PI / 2;
-                const offsetX = offset * Math.cos(perpAngle);
-                const offsetY = offset * Math.sin(perpAngle);
-
-                if (child === children[0]) {
-                  child.points([offsetX, offsetY, length + offsetX, offsetY]);
-                } else {
-                  child.points([-offsetX, -offsetY, length - offsetX, -offsetY]);
-                }
-              } else {
-                // For doors, update the line
-                child.points([0, 0, length, 0]);
-              }
-            } else if (child instanceof Konva.Arc) {
-              // Update the arc for doors
-              child.outerRadius(length);
-            }
-          });
-        }
-
-        // Update measurements
-        this.updateMeasurements(shape, shapeInfo.startCircle.position(), shapeInfo.endCircle.position());
-      }
-
-      const measurementGroup = this.dragLayer.findOne(`#measurement-${shape._id}`) as Konva.Group;
-      if (measurementGroup) {
-        measurementGroup.moveTo(this.layer);
-      }
-    });
-
-    if (this.selectionBoundingRect) {
-      this.selectionBoundingRect.moveTo(this.layer);
-    }
-
-    this.updateSelectionRectangle();
-    this.layer.batchDraw();
-    this.dragLayer.batchDraw();
-  }
-}
 
   selectShapeAtPoint(pos: Konva.Vector2d) {
     const shape = this.layer.getIntersection(pos);
@@ -1207,5 +1212,75 @@ generateThumbnail(width: number, height: number): string {
   this.layer.batchDraw();
 
   return dataURL;
+}
+
+
+
+handlePinchZoom(stage: Konva.Stage) {
+  stage.on('touchstart', (e) => {
+    if (e.evt.touches.length === 2) {
+      // Store the current mode and set it to null
+      this.previousMode = this.currentMode;
+      this.setMode(null);
+
+      const touch1 = e.evt.touches[0];
+      const touch2 = e.evt.touches[1];
+      this.lastCenter = this.getCenter(touch1, touch2);
+      this.lastDist = this.getDistance(touch1, touch2);
+    }
+  });
+
+  stage.on('touchmove', (e) => {
+    e.evt.preventDefault();
+    const touch1 = e.evt.touches[0];
+    const touch2 = e.evt.touches[1];
+
+    if (touch1 && touch2) {
+      if (!this.lastCenter) {
+        this.lastCenter = this.getCenter(touch1, touch2);
+        this.lastDist = this.getDistance(touch1, touch2);
+        return;
+      }
+
+      const newCenter = this.getCenter(touch1, touch2);
+      const newDist = this.getDistance(touch1, touch2);
+
+      const scale = newDist / this.lastDist;
+
+      // Adjust pixelsPerMeter based on the scale
+      const newPixelsPerMeter = this.pixelsPerMeter * scale;
+      this.setScale(newPixelsPerMeter);
+
+      // Update last values
+      this.lastCenter = newCenter;
+      this.lastDist = newDist;
+    }
+  });
+
+  stage.on('touchend', (e) => {
+    if (e.evt.touches.length < 2) {
+      // Reset zoom-related variables
+      this.lastCenter = null;
+      this.lastDist = 0;
+
+      // Set mode back to 'select' or the previous mode
+      if (this.currentMode === null) {
+        this.setMode(this.previousMode || 'select');
+      }
+    }
+  });
+}
+
+private getCenter(touch1: Touch, touch2: Touch): Konva.Vector2d {
+  return {
+    x: (touch1.clientX + touch2.clientX) / 2,
+    y: (touch1.clientY + touch2.clientY) / 2
+  };
+}
+
+private getDistance(touch1: Touch, touch2: Touch): number {
+  const dx = touch1.clientX - touch2.clientX;
+  const dy = touch1.clientY - touch2.clientY;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 }
