@@ -51,8 +51,6 @@ export class DrawingPage {
   currentWindowColor: string;
   currentRoofColor: string;
 
-
-
   public alertButtons = [
     {
       text: 'Cancel',
@@ -65,7 +63,7 @@ export class DrawingPage {
       text: 'save',
       role: 'confirm',
       handler: () => {
-        this.performSave()
+        this.performSave();
       },
     },
   ];
@@ -408,6 +406,9 @@ segments5 = [
   public lengthScaleFactor: number = 1.7;
   private backButtonSubscription!: Subscription;
   private hasChanges: boolean = false;
+  message: string = '';
+  firstMenu: boolean = true;
+
   public alertInputs = [
     {
       placeholder: 'Title',
@@ -419,9 +420,7 @@ segments5 = [
         maxlength: 30,
       },
       binding: 'drawingDescription',
-
     },
-
   ];
   constructor(
     private gridService: GridService,
@@ -431,13 +430,11 @@ segments5 = [
     private geminiService: GeminiService,
     private menuCtrl: MenuController,
     private route: ActivatedRoute,
-    private saveService : SaveDrawingService,
-    private alertController : AlertController,
+    private saveService: SaveDrawingService,
+    private alertController: AlertController,
     private router : Router,
     private platform: Platform,
     private authService: AuthService,
-
-
 
 
 
@@ -451,6 +448,13 @@ segments5 = [
 
   updateScale() {
     this.drawingService.setScale(this.currentScale);
+  }
+  openMenu() {
+    if (this.firstMenu) {
+      this.openFirstMenu();
+    } else {
+      this.openSecondMenu();
+    }
   }
   openSecondMenu() {
     /**
@@ -481,12 +485,28 @@ segments5 = [
 
     this.menuCtrl.open('first-menu');
   }
+  sendMessage() {
+    console.log('Message sent:', this.message);
+    // Implement your send logic here
+    this.message = '';
+  }
+
+  undo() {
+    console.log('Undo clicked');
+    // Implement your undo logic here
+  }
+
+  redo() {
+    console.log('Redo clicked');
+    // Implement your redo logic here
+  }
   closeFirstMenu() {
     this.menuCtrl.close('first-menu');
   }
   toggleGridMenu() {
     this.toggleGrid();
     this.closeFirstMenu();
+    this.gridToggle = !this.gridToggle;
   }
   selectDoor() {
     this.setMode('door');
@@ -508,10 +528,37 @@ segments5 = [
     this.deleteSelected();
     this.closeFirstMenu();
   }
+  transformTo3D() {
+    this.convert2DTo3D();
+    this.closeFirstMenu();
+
+    if (this.firstMenu) {
+      this.containerRef.nativeElement.style.display = 'none';
+      this.threeContainerRef.nativeElement.style.display = 'block';
+      console.log(3)
+    }
+    this.firstMenu = !this.firstMenu;
+
+  }
+  roofPlacement() {
+    this.closeSecondMenu();
+    this.toggleRoof();
+  }
   toggleDimentionMode() {
     this.toggleDistanceLabels();
     this.closeFirstMenu();
     this.dimentionToggle = !this.dimentionToggle;
+  }
+  transformTo2D() {
+    this.closeSecondMenu();
+    this.containerRef.nativeElement.style.display = 'block';
+    this.threeContainerRef.nativeElement.style.display = 'none';
+    console.log(1)
+    this.firstMenu = !this.firstMenu;
+
+    // if(this.firstMenu){
+    //   const element = this.containerRef.nativeElement.
+    // }
   }
   toggleGridMode() {
     this.toggleGridMenu();
@@ -553,11 +600,13 @@ segments5 = [
       this.updateRoofColor(color);
     });
 
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       this.drawingId = params.get('id') || '0';
       this.initializeDrawing();
       if(this.drawingId === '0') this.drawingService.clearAllDrawings();
     });
+    this.containerRef.nativeElement.style.display = 'block';
+    this.threeContainerRef.nativeElement.style.display = 'none';
 
   }
 
@@ -565,6 +614,7 @@ segments5 = [
     this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(10, () => {
       this.backToHome();
     });
+
   }
 
 
@@ -702,40 +752,40 @@ initializeDrawing() {
   this.hasChanges = false;  // Reset flag when loading a drawing
 }
 
-deserializeDrawing(serializedData: string) {
-  console.log('Deserializing drawing data:', serializedData);
-  const shapes = JSON.parse(serializedData);
-  this.drawingService.clearAllDrawings();
-  shapes.forEach((shape: any, index: number) => {
-    console.log(`Recreating shape ${index}:`, shape);
-    this.recreateShape(shape);
-  });
-  const layer = this.drawingService.getLayer();
-  layer.batchDraw();
-}
-
-private recreateShape(shapeData: any) {
-  console.log('Recreating shape:', shapeData);
-  const startPos = this.stage.getPointerPosition() || { x: 0, y: 0 };
-  startPos.x = shapeData.start.x;
-  startPos.y = shapeData.start.y;
-  const endPos = { x: shapeData.end.x, y: shapeData.end.y };
-
-  this.drawingService.setMode(shapeData.type);
-  this.drawingService.startDrawing(startPos);
-  this.drawingService.continueDrawing(endPos);
-  this.drawingService.stopDrawing();
-}
-
-loaddatafromstorage(id: string) {
-  console.log(id)
-  const item = localStorage.getItem(`${id}`);
-  if (item) {
-    console.log(item)
-    return JSON.parse(item) ;
+  deserializeDrawing(serializedData: string) {
+    console.log('Deserializing drawing data:', serializedData);
+    const shapes = JSON.parse(serializedData);
+    this.drawingService.clearAllDrawings();
+    shapes.forEach((shape: any, index: number) => {
+      console.log(`Recreating shape ${index}:`, shape);
+      this.recreateShape(shape);
+    });
+    const layer = this.drawingService.getLayer();
+    layer.batchDraw();
   }
-  return null;
-}
+
+  private recreateShape(shapeData: any) {
+    console.log('Recreating shape:', shapeData);
+    const startPos = this.stage.getPointerPosition() || { x: 0, y: 0 };
+    startPos.x = shapeData.start.x;
+    startPos.y = shapeData.start.y;
+    const endPos = { x: shapeData.end.x, y: shapeData.end.y };
+
+    this.drawingService.setMode(shapeData.type);
+    this.drawingService.startDrawing(startPos);
+    this.drawingService.continueDrawing(endPos);
+    this.drawingService.stopDrawing();
+  }
+
+  loaddatafromstorage(id: string) {
+    console.log(id);
+    const item = localStorage.getItem(`${id}`);
+    if (item) {
+      console.log(item);
+      return JSON.parse(item);
+    }
+    return null;
+  }
   initializeStage() {
     // const screenSize = Math.max(window.innerWidth, window.innerHeight);
     const screen =( window.innerWidth + window.innerHeight)/1.7 ;
