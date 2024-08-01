@@ -48,8 +48,6 @@ export class DrawingPage {
   currentWindowColor: string;
   currentRoofColor: string;
 
-
-
   public alertButtons = [
     {
       text: 'Cancel',
@@ -62,132 +60,524 @@ export class DrawingPage {
       text: 'save',
       role: 'confirm',
       handler: () => {
-        this.performSave()
+        this.performSave();
       },
     },
   ];
 
   segment1 = [
     // External wall
-    { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 6000, angle: 0 },
-    { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 6000, angle: 90 },
-    { start: 'A3', end: 'A4', name: 'External wall 3', type: 'wall', length: 6000, angle: 180 },
-    { start: 'A4', end: 'A1', name: 'External wall 4', type: 'wall', length: 6000, angle: 270 },
+    {
+      start: 'A1',
+      end: 'A2',
+      name: 'External wall 1',
+      type: 'wall',
+      length: 6000,
+      angle: 0,
+    },
+    {
+      start: 'A2',
+      end: 'A3',
+      name: 'External wall 2',
+      type: 'wall',
+      length: 6000,
+      angle: 90,
+    },
+    {
+      start: 'A3',
+      end: 'A4',
+      name: 'External wall 3',
+      type: 'wall',
+      length: 6000,
+      angle: 180,
+    },
+    {
+      start: 'A4',
+      end: 'A1',
+      name: 'External wall 4',
+      type: 'wall',
+      length: 6000,
+      angle: 270,
+    },
 
     // Inner walls Kitchen
-    { start: 'A1', end: 'A5', name: 'Inner wall 1', type: 'wall', length: 3000, angle: 0 },
-    { start: 'A5', end: 'A6', name: 'Inner wall 2', type: 'wall', length: 2600, angle: 90 },
-    { start: 'A6', end: 'A7', name: 'Inner wall 3', type: 'wall', length: 3000, angle: 180 },
+    {
+      start: 'A1',
+      end: 'A5',
+      name: 'Inner wall 1',
+      type: 'wall',
+      length: 3000,
+      angle: 0,
+    },
+    {
+      start: 'A5',
+      end: 'A6',
+      name: 'Inner wall 2',
+      type: 'wall',
+      length: 2600,
+      angle: 90,
+    },
+    {
+      start: 'A6',
+      end: 'A7',
+      name: 'Inner wall 3',
+      type: 'wall',
+      length: 3000,
+      angle: 180,
+    },
 
     // Inner walls toilet
-    { start: 'A4', end: 'A8', name: 'Inner wall 4', type: 'wall', length: 2200, angle: 270 },
-    { start: 'A8', end: 'A9', name: 'Inner wall 5', type: 'wall', length: 1800, angle: 0 },
-    { start: 'A9', end: 'A10', name: 'Inner wall 6', type: 'wall', length: 2200, angle: 90 },
+    {
+      start: 'A4',
+      end: 'A8',
+      name: 'Inner wall 4',
+      type: 'wall',
+      length: 2200,
+      angle: 270,
+    },
+    {
+      start: 'A8',
+      end: 'A9',
+      name: 'Inner wall 5',
+      type: 'wall',
+      length: 1800,
+      angle: 0,
+    },
+    {
+      start: 'A9',
+      end: 'A10',
+      name: 'Inner wall 6',
+      type: 'wall',
+      length: 2200,
+      angle: 90,
+    },
 
     // Room door
-    { start: 'A2', end: 'A11', name: 'Door 1', type: 'door', length: 1000, angle: 90 },
+    {
+      start: 'A2',
+      end: 'A11',
+      name: 'Door 1',
+      type: 'door',
+      length: 1000,
+      angle: 90,
+    },
 
     // Kitchen door
-    { start: 'A6', end: 'A13', name: 'Door 2', type: 'door', length: 900, angle: 180 },
+    {
+      start: 'A6',
+      end: 'A13',
+      name: 'Door 2',
+      type: 'door',
+      length: 900,
+      angle: 180,
+    },
 
     // Toilet door
-    { start: 'A9', end: 'A12', name: 'Door 3', type: 'door', length: 900, angle: 90 },
+    {
+      start: 'A9',
+      end: 'A12',
+      name: 'Door 3',
+      type: 'door',
+      length: 900,
+      angle: 90,
+    },
 
     // Room Window
-    { start: 'A3', end: 'A14', name: 'Window External wall 1', type: 'wall', length: 1000, angle: 270 },
-    { start: 'A14', end: 'A15', name: 'Window 1', type: 'window', length: 1800, angle: 270 },
+    {
+      start: 'A3',
+      end: 'A14',
+      name: 'Window External wall 1',
+      type: 'wall',
+      length: 1000,
+      angle: 270,
+    },
+    {
+      start: 'A14',
+      end: 'A15',
+      name: 'Window 1',
+      type: 'window',
+      length: 1800,
+      angle: 270,
+    },
 
     // Kitchen Window
-    { start: 'A1', end: 'A18', name: 'Window External wall 4', type: 'wall', length: 700, angle: 0 },
-    { start: 'A18', end: 'A19', name: 'Window 2', type: 'window', length: 1600, angle: 0 },
+    {
+      start: 'A1',
+      end: 'A18',
+      name: 'Window External wall 4',
+      type: 'wall',
+      length: 700,
+      angle: 0,
+    },
+    {
+      start: 'A18',
+      end: 'A19',
+      name: 'Window 2',
+      type: 'window',
+      length: 1600,
+      angle: 0,
+    },
 
     // Toilet Window
-    { start: 'A4', end: 'A16', name: 'Window External wall 3', type: 'wall', length: 600, angle: 270 },
-    { start: 'A16', end: 'A17', name: 'Window 3', type: 'window', length: 900, angle: 270 },
+    {
+      start: 'A4',
+      end: 'A16',
+      name: 'Window External wall 3',
+      type: 'wall',
+      length: 600,
+      angle: 270,
+    },
+    {
+      start: 'A16',
+      end: 'A17',
+      name: 'Window 3',
+      type: 'window',
+      length: 900,
+      angle: 270,
+    },
   ];
 
   segments3 = [
-   // External wall
-   { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 4000, angle: 0 },
-   { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 4500, angle: 90 },
-   { start: 'A3', end: 'A4', name: 'External wall 3', type: 'wall', length: 4000, angle: 180 },
-   { start: 'A4', end: 'A1', name: 'External wall 4', type: 'wall', length: 4500, angle: 270 },
+    // External wall
+    {
+      start: 'A1',
+      end: 'A2',
+      name: 'External wall 1',
+      type: 'wall',
+      length: 4000,
+      angle: 0,
+    },
+    {
+      start: 'A2',
+      end: 'A3',
+      name: 'External wall 2',
+      type: 'wall',
+      length: 4500,
+      angle: 90,
+    },
+    {
+      start: 'A3',
+      end: 'A4',
+      name: 'External wall 3',
+      type: 'wall',
+      length: 4000,
+      angle: 180,
+    },
+    {
+      start: 'A4',
+      end: 'A1',
+      name: 'External wall 4',
+      type: 'wall',
+      length: 4500,
+      angle: 270,
+    },
 
+    //  inner walls Kitchen
+    {
+      start: 'A3',
+      end: 'A5',
+      name: 'Inner wall 1',
+      type: 'wall',
+      length: 1500,
+      angle: 270,
+    },
+    {
+      start: 'A5',
+      end: 'A6',
+      name: 'Inner wall 2',
+      type: 'wall',
+      length: 1400,
+      angle: 180,
+    },
+    {
+      start: 'A6',
+      end: 'A7',
+      name: 'Inner wall 3',
+      type: 'wall',
+      length: 1500,
+      angle: 90,
+    },
 
+    // inner walls toilet
+    {
+      start: 'A4',
+      end: 'A8',
+      name: 'Inner wall 4',
+      type: 'wall',
+      length: 1500,
+      angle: 270,
+    },
+    {
+      start: 'A8',
+      end: 'A9',
+      name: 'Inner wall 5',
+      type: 'wall',
+      length: 1400,
+      angle: 0,
+    },
+    {
+      start: 'A9',
+      end: 'A10',
+      name: 'Inner wall 6',
+      type: 'wall',
+      length: 1500,
+      angle: 90,
+    },
 
-  //  inner walls Kitchen
-  { start: 'A3', end: 'A5', name: 'Inner wall 1', type: 'wall', length: 1500, angle: 270 },
-  { start: 'A5', end: 'A6', name: 'Inner wall 2', type: 'wall', length: 1400, angle: 180 },
-  { start: 'A6', end: 'A7', name: 'Inner wall 3', type: 'wall', length: 1500, angle: 90 },
+    // Room door
+    {
+      start: 'A2',
+      end: 'A11',
+      name: 'Door 1',
+      type: 'door',
+      length: 1500,
+      angle: 180,
+    },
 
+    // Kitchen door
+    {
+      start: 'A5',
+      end: 'A13',
+      name: 'Door 2',
+      type: 'door',
+      length: 900,
+      angle: 180,
+    },
 
-  // inner walls toilet
-  { start: 'A4', end: 'A8', name: 'Inner wall 4', type: 'wall', length: 1500, angle: 270 },
-  { start: 'A8', end: 'A9', name: 'Inner wall 5', type: 'wall', length: 1400, angle: 0 },
-  { start: 'A9', end: 'A10', name: 'Inner wall 6', type: 'wall', length: 1500, angle: 90 },
+    // toilet door
+    {
+      start: 'A9',
+      end: 'A12',
+      name: 'Door 3',
+      type: 'door',
+      length: 900,
+      angle: 90,
+    },
 
+    // Room Window
+    {
+      start: 'A1',
+      end: 'A14',
+      name: 'Window External wall 1',
+      type: 'wall',
+      length: 500,
+      angle: 0,
+    },
+    {
+      start: 'A14',
+      end: 'A15',
+      name: 'Window 1',
+      type: 'window',
+      length: 1000,
+      angle: 0,
+    },
 
-  // Room door
-  { start: 'A2', end: 'A11', name: 'Door 1', type: 'door', length: 1500, angle: 180 },
+    // Kitchen Window
+    {
+      start: 'A3',
+      end: 'A18',
+      name: 'Window External wall 2',
+      type: 'wall',
+      length: 250,
+      angle: 180,
+    },
+    {
+      start: 'A18',
+      end: 'A19',
+      name: 'Window 2',
+      type: 'window',
+      length: 800,
+      angle: 180,
+    },
 
-  // Kitchen door
-  { start: 'A5', end: 'A13', name: 'Door 2', type: 'door', length: 900, angle: 180 },
-
-  // toilet door
-  { start: 'A9', end: 'A12', name: 'Door 3', type: 'door', length: 900, angle: 90 },
-
-
-  // Room Window
-  { start: 'A1', end: 'A14', name: 'Window External wall 1', type: 'wall', length: 500, angle: 0 },
-  { start: 'A14', end: 'A15', name: 'Window 1', type: 'window', length: 1000, angle: 0 },
-
-  // Kitchen Window
-  { start: 'A3', end: 'A18', name: 'Window External wall 2', type: 'wall', length: 250, angle: 180 },
-  { start: 'A18', end: 'A19', name: 'Window 2', type: 'window', length: 800, angle: 180 },
-
-
-   // toilet Window
-   { start: 'A4', end: 'A16', name: 'Window External wall 2', type: 'wall', length: 250, angle: 0 },
-   { start: 'A16', end: 'A17', name: 'Window 3', type: 'window', length: 500, angle: 0 },
-
+    // toilet Window
+    {
+      start: 'A4',
+      end: 'A16',
+      name: 'Window External wall 2',
+      type: 'wall',
+      length: 250,
+      angle: 0,
+    },
+    {
+      start: 'A16',
+      end: 'A17',
+      name: 'Window 3',
+      type: 'window',
+      length: 500,
+      angle: 0,
+    },
   ];
   segment2 = [
     // External walls
-    { start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 7620, angle: 0 },
-    { start: 'A2', end: 'A3', name: 'External wall 2', type: 'wall', length: 8890, angle: 90 },
-    { start: 'A3', end: 'A4', name: 'External wall 3', type: 'wall', length: 7620, angle: 180 },
-    { start: 'A4', end: 'A1', name: 'External wall 4', type: 'wall', length: 8890, angle: 270 },
+    {
+      start: 'A1',
+      end: 'A2',
+      name: 'External wall 1',
+      type: 'wall',
+      length: 7620,
+      angle: 0,
+    },
+    {
+      start: 'A2',
+      end: 'A3',
+      name: 'External wall 2',
+      type: 'wall',
+      length: 8890,
+      angle: 90,
+    },
+    {
+      start: 'A3',
+      end: 'A4',
+      name: 'External wall 3',
+      type: 'wall',
+      length: 7620,
+      angle: 180,
+    },
+    {
+      start: 'A4',
+      end: 'A1',
+      name: 'External wall 4',
+      type: 'wall',
+      length: 8890,
+      angle: 270,
+    },
 
     // Inner walls Kitchen
-    { start: 'A3', end: 'A5', name: 'Inner wall 1', type: 'wall', length: 3048, angle: 270 },
-    { start: 'A5', end: 'A6', name: 'Inner wall 2', type: 'wall', length: 2540, angle: 180 },
-    { start: 'A6', end: 'A7', name: 'Inner wall 3', type: 'wall', length: 3048, angle: 90 },
+    {
+      start: 'A3',
+      end: 'A5',
+      name: 'Inner wall 1',
+      type: 'wall',
+      length: 3048,
+      angle: 270,
+    },
+    {
+      start: 'A5',
+      end: 'A6',
+      name: 'Inner wall 2',
+      type: 'wall',
+      length: 2540,
+      angle: 180,
+    },
+    {
+      start: 'A6',
+      end: 'A7',
+      name: 'Inner wall 3',
+      type: 'wall',
+      length: 3048,
+      angle: 90,
+    },
 
     // Inner walls toilet
-    { start: 'A4', end: 'A8', name: 'Inner wall 4', type: 'wall', length: 2794, angle: 270 },
-    { start: 'A8', end: 'A9', name: 'Inner wall 5', type: 'wall', length: 2032, angle: 0 },
-    { start: 'A9', end: 'A10', name: 'Inner wall 6', type: 'wall', length: 2794, angle: 90 },
+    {
+      start: 'A4',
+      end: 'A8',
+      name: 'Inner wall 4',
+      type: 'wall',
+      length: 2794,
+      angle: 270,
+    },
+    {
+      start: 'A8',
+      end: 'A9',
+      name: 'Inner wall 5',
+      type: 'wall',
+      length: 2032,
+      angle: 0,
+    },
+    {
+      start: 'A9',
+      end: 'A10',
+      name: 'Inner wall 6',
+      type: 'wall',
+      length: 2794,
+      angle: 90,
+    },
 
     // Room door
-    { start: 'A2', end: 'A11', name: 'Door 1', type: 'door', length: 914, angle: 180 },
+    {
+      start: 'A2',
+      end: 'A11',
+      name: 'Door 1',
+      type: 'door',
+      length: 914,
+      angle: 180,
+    },
 
     // Kitchen door
-    { start: 'A5', end: 'A13', name: 'Door 2', type: 'door', length: 914, angle: 180 },
+    {
+      start: 'A5',
+      end: 'A13',
+      name: 'Door 2',
+      type: 'door',
+      length: 914,
+      angle: 180,
+    },
 
     // Toilet door
-    { start: 'A9', end: 'A12', name: 'Door 3', type: 'door', length: 914, angle: 90 },
+    {
+      start: 'A9',
+      end: 'A12',
+      name: 'Door 3',
+      type: 'door',
+      length: 914,
+      angle: 90,
+    },
 
     // Room Window
-    { start: 'A1', end: 'A14', name: 'Window External wall 1', type: 'wall', length: 1524, angle: 0 },
-    { start: 'A14', end: 'A15', name: 'Window 1', type: 'window', length: 1829, angle: 0 },
+    {
+      start: 'A1',
+      end: 'A14',
+      name: 'Window External wall 1',
+      type: 'wall',
+      length: 1524,
+      angle: 0,
+    },
+    {
+      start: 'A14',
+      end: 'A15',
+      name: 'Window 1',
+      type: 'window',
+      length: 1829,
+      angle: 0,
+    },
 
     // Kitchen Window
-    { start: 'A3', end: 'A18', name: 'Window External wall 2', type: 'wall', length: 914, angle: 180 },
-    { start: 'A18', end: 'A19', name: 'Window 2', type: 'window', length: 1524, angle: 180 },
+    {
+      start: 'A3',
+      end: 'A18',
+      name: 'Window External wall 2',
+      type: 'wall',
+      length: 914,
+      angle: 180,
+    },
+    {
+      start: 'A18',
+      end: 'A19',
+      name: 'Window 2',
+      type: 'window',
+      length: 1524,
+      angle: 180,
+    },
 
     // Toilet Window
-    { start: 'A4', end: 'A16', name: 'Window External wall 2', type: 'wall', length: 508, angle: 0 },
-    { start: 'A16', end: 'A17', name: 'Window 3', type: 'window', length: 1219, angle: 0 },
+    {
+      start: 'A4',
+      end: 'A16',
+      name: 'Window External wall 2',
+      type: 'wall',
+      length: 508,
+      angle: 0,
+    },
+    {
+      start: 'A16',
+      end: 'A17',
+      name: 'Window 3',
+      type: 'window',
+      length: 1219,
+      angle: 0,
+    },
   ];
   // segments3 = [
   //   // External wall
@@ -228,20 +618,59 @@ export class DrawingPage {
   //   { start: 'A16', end: 'A17', name: 'Window 3', type: 'window', length: 700, angle: 0 },
   // ];
 
-
-
-
-// 1 room 1 parlor 1kitchen 1 toilet (studio)
+  // 1 room 1 parlor 1kitchen 1 toilet (studio)
   segment5 = [
     // External wall
-    {start: 'A1', end: 'A2', name: 'External wall 1', type: 'wall', length: 7500, angle: 0, },
-    {start: 'A2',end: 'A3',name: 'External wall 2',type: 'wall',length: 9500,angle: 90,},
-    {start: 'A3',end: 'A4',name: 'External wall 3',type: 'wall',length: 7500,angle: 180,},
-    {start: 'A4',end: 'A1',name: 'External wall 4',type: 'wall', length: 9500,angle: 270, },
+    {
+      start: 'A1',
+      end: 'A2',
+      name: 'External wall 1',
+      type: 'wall',
+      length: 7500,
+      angle: 0,
+    },
+    {
+      start: 'A2',
+      end: 'A3',
+      name: 'External wall 2',
+      type: 'wall',
+      length: 9500,
+      angle: 90,
+    },
+    {
+      start: 'A3',
+      end: 'A4',
+      name: 'External wall 3',
+      type: 'wall',
+      length: 7500,
+      angle: 180,
+    },
+    {
+      start: 'A4',
+      end: 'A1',
+      name: 'External wall 4',
+      type: 'wall',
+      length: 9500,
+      angle: 270,
+    },
 
     // Inner walls Bedroom
-    {start: 'A1',end: 'A5',name: 'Inner wall 1',type: 'wall',length: 5000,angle: 0,},
-    {start: 'A5',end: 'A6',name: 'Inner wall 2',type: 'wall',length: 4500,angle: 90,},
+    {
+      start: 'A1',
+      end: 'A5',
+      name: 'Inner wall 1',
+      type: 'wall',
+      length: 5000,
+      angle: 0,
+    },
+    {
+      start: 'A5',
+      end: 'A6',
+      name: 'Inner wall 2',
+      type: 'wall',
+      length: 4500,
+      angle: 90,
+    },
     {
       start: 'A6',
       end: 'A7',
@@ -1277,12 +1706,13 @@ export class DrawingPage {
       angle: 270,
     },
   ];
-   drawingId: string = '0';
-   drawingTitle: string = '';
+  drawingId: string = '0';
+  drawingTitle: string = '';
   drawingDescription: string = '';
   generatedContent: any = '';
+  message: string = '';
+  firstMenu: boolean = true;
   public lengthScaleFactor: number = 1.2;
-
 
   public alertInputs = [
     {
@@ -1295,9 +1725,7 @@ export class DrawingPage {
         maxlength: 30,
       },
       binding: 'drawingDescription',
-
     },
-
   ];
   constructor(
     private gridService: GridService,
@@ -1307,10 +1735,8 @@ export class DrawingPage {
     private geminiService: GeminiService,
     private menuCtrl: MenuController,
     private route: ActivatedRoute,
-    private saveService : SaveDrawingService,
-    private alertController : AlertController
-
-
+    private saveService: SaveDrawingService,
+    private alertController: AlertController
   ) {
     this.currentWallColor = this.colorService.DEFAULT_WALL_COLOR;
     this.currentDoorColor = this.colorService.DEFAULT_DOOR_COLOR;
@@ -1321,6 +1747,13 @@ export class DrawingPage {
 
   updateScale() {
     this.drawingService.setScale(this.currentScale);
+  }
+  openMenu() {
+    if (this.firstMenu) {
+      this.openFirstMenu();
+    } else {
+      this.openSecondMenu();
+    }
   }
   openSecondMenu() {
     /**
@@ -1351,12 +1784,28 @@ export class DrawingPage {
 
     this.menuCtrl.open('first-menu');
   }
+  sendMessage() {
+    console.log('Message sent:', this.message);
+    // Implement your send logic here
+    this.message = '';
+  }
+
+  undo() {
+    console.log('Undo clicked');
+    // Implement your undo logic here
+  }
+
+  redo() {
+    console.log('Redo clicked');
+    // Implement your redo logic here
+  }
   closeFirstMenu() {
     this.menuCtrl.close('first-menu');
   }
   toggleGridMenu() {
     this.toggleGrid();
     this.closeFirstMenu();
+    this.gridToggle = !this.gridToggle;
   }
   selectDoor() {
     this.setMode('door');
@@ -1378,10 +1827,23 @@ export class DrawingPage {
     this.deleteSelected();
     this.closeFirstMenu();
   }
+  transformTo3D() {
+    this.convert2DTo3D();
+    this.closeFirstMenu();
+    this.firstMenu = !this.firstMenu;
+  }
+  roofPlacement() {
+    this.closeSecondMenu();
+    this.toggleRoof();
+  }
   toggleDimentionMode() {
     this.toggleDistanceLabels();
     this.closeFirstMenu();
     this.dimentionToggle = !this.dimentionToggle;
+  }
+  transformTo2D() {
+    this.closeSecondMenu();
+    this.firstMenu = !this.firstMenu;
   }
   toggleGridMode() {
     this.toggleGridMenu();
@@ -1421,117 +1883,123 @@ export class DrawingPage {
       this.updateRoofColor(color);
     });
 
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       this.drawingId = params.get('id') || '0';
       this.initializeDrawing();
     });
-
   }
 
-
-
- saveDrawing() {
-  if (this.drawingId === '0') {
-    this.openSaveDialog();
-  } else {
-    this.performSave();
-  }
-}
-async openSaveDialog() {
-  const alert = await this.alertController.create({
-    header: 'Save Drawing',
-    inputs: [
-      {
-        name: 'title',
-        type: 'text',
-        placeholder: 'Title'
-      },
-      {
-        name: 'description',
-        type: 'text',
-        placeholder: 'Description (max 30 characters)'
-      }
-    ],
-    buttons: [
-      {
-        text: 'Cancel',
-        role: 'cancel'
-      },
-      {
-        text: 'Save',
-        handler: (data) => {
-          this.drawingTitle = data.title;
-          this.drawingDescription = data.description;
-          this.performSave();
-        }
-      }
-    ]
-  });
-
-  await alert.present();
-}
-performSave() {
-  if (this.drawingId === '0') {
-    this.drawingId = Date.now().toString();
-  }
-  console.log('me')
-
-  this.saveService.saveDrawingToSession(this.drawingId, this.drawingTitle, this.drawingDescription);
-  console.log('Drawing saved with ID:', this.drawingId , this.drawingDescription , this.drawingTitle);
-}
-
-initializeDrawing() {
-  if (this.drawingId === '0') {
-    // New drawing, do nothing special
-  } else if (parseInt(this.drawingId) < 10) {
-    this.drawSquare(this.segment1);
-  } else {
-    const loadedData = this.loaddatafromstorage(this.drawingId);
-    if (loadedData) {
-      this.drawingTitle = loadedData.title;
-      this.drawingDescription = loadedData.description;
-      this.deserializeDrawing(loadedData.shapes);
+  saveDrawing() {
+    if (this.drawingId === '0') {
+      this.openSaveDialog();
     } else {
-      console.log('No saved drawing found for ID:', this.drawingId);
-      // Optionally start a new drawing or show a message to the user
+      this.performSave();
     }
   }
-}
+  async openSaveDialog() {
+    const alert = await this.alertController.create({
+      header: 'Save Drawing',
+      inputs: [
+        {
+          name: 'title',
+          type: 'text',
+          placeholder: 'Title',
+        },
+        {
+          name: 'description',
+          type: 'text',
+          placeholder: 'Description (max 30 characters)',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Save',
+          handler: (data) => {
+            this.drawingTitle = data.title;
+            this.drawingDescription = data.description;
+            this.performSave();
+          },
+        },
+      ],
+    });
 
-deserializeDrawing(serializedData: string) {
-  console.log('Deserializing drawing data:', serializedData);
-  const shapes = JSON.parse(serializedData);
-  this.drawingService.clearAllDrawings();
-  shapes.forEach((shape: any, index: number) => {
-    console.log(`Recreating shape ${index}:`, shape);
-    this.recreateShape(shape);
-  });
-  const layer = this.drawingService.getLayer();
-  layer.batchDraw();
-}
-
-private recreateShape(shapeData: any) {
-  console.log('Recreating shape:', shapeData);
-  const startPos = this.stage.getPointerPosition() || { x: 0, y: 0 };
-  startPos.x = shapeData.start.x;
-  startPos.y = shapeData.start.y;
-  const endPos = { x: shapeData.end.x, y: shapeData.end.y };
-
-  this.drawingService.setMode(shapeData.type);
-  this.drawingService.startDrawing(startPos);
-  this.drawingService.continueDrawing(endPos);
-  this.drawingService.stopDrawing();
-}
-
-loaddatafromstorage(id: string) {
-  console.log(id)
-  const item = localStorage.getItem(`${id}`);
-  if (item) {
-    console.log(item)
-    return JSON.parse(item) ;
+    await alert.present();
   }
-  return null;
-}
+  performSave() {
+    if (this.drawingId === '0') {
+      this.drawingId = Date.now().toString();
+    }
+    console.log('me');
+
+    this.saveService.saveDrawingToSession(
+      this.drawingId,
+      this.drawingTitle,
+      this.drawingDescription
+    );
+    console.log(
+      'Drawing saved with ID:',
+      this.drawingId,
+      this.drawingDescription,
+      this.drawingTitle
+    );
+  }
+
+  initializeDrawing() {
+    if (this.drawingId === '0') {
+      // New drawing, do nothing special
+    } else if (parseInt(this.drawingId) < 10) {
+      this.drawSquare(this.segment1);
+    } else {
+      const loadedData = this.loaddatafromstorage(this.drawingId);
+      if (loadedData) {
+        this.drawingTitle = loadedData.title;
+        this.drawingDescription = loadedData.description;
+        this.deserializeDrawing(loadedData.shapes);
+      } else {
+        console.log('No saved drawing found for ID:', this.drawingId);
+        // Optionally start a new drawing or show a message to the user
+      }
+    }
+  }
+
+  deserializeDrawing(serializedData: string) {
+    console.log('Deserializing drawing data:', serializedData);
+    const shapes = JSON.parse(serializedData);
+    this.drawingService.clearAllDrawings();
+    shapes.forEach((shape: any, index: number) => {
+      console.log(`Recreating shape ${index}:`, shape);
+      this.recreateShape(shape);
+    });
+    const layer = this.drawingService.getLayer();
+    layer.batchDraw();
+  }
+
+  private recreateShape(shapeData: any) {
+    console.log('Recreating shape:', shapeData);
+    const startPos = this.stage.getPointerPosition() || { x: 0, y: 0 };
+    startPos.x = shapeData.start.x;
+    startPos.y = shapeData.start.y;
+    const endPos = { x: shapeData.end.x, y: shapeData.end.y };
+
+    this.drawingService.setMode(shapeData.type);
+    this.drawingService.startDrawing(startPos);
+    this.drawingService.continueDrawing(endPos);
+    this.drawingService.stopDrawing();
+  }
+
+  loaddatafromstorage(id: string) {
+    console.log(id);
+    const item = localStorage.getItem(`${id}`);
+    if (item) {
+      console.log(item);
+      return JSON.parse(item);
+    }
+    return null;
+  }
   initializeStage() {
     const screenSize = Math.max(window.innerWidth, window.innerHeight);
     const stageSize = screenSize; // You can adjust this multiplier as needed

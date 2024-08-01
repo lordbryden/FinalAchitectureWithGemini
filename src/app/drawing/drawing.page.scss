@@ -11,7 +11,9 @@ ion-button.selected {
 #threeContainer {
   background-color: #f0f0f0;
 }
-
+.icon-size {
+  font-size: 1.5rem;
+}
 .image-containers {
   position: relative;
   top: -60px;
@@ -57,7 +59,14 @@ ion-button.selected {
 }
 .items {
   flex: 1;
+  font-size: 0.8rem;
   // width: 50%;
+}
+.adjustments {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .right-menu-div {
   margin: 16px;
@@ -69,7 +78,7 @@ ion-button.selected {
   align-items: center;
   align-self: center;
   width: 100%;
-  margin-top: 16px;
+  // margin-top: 16px
 }
 .half-width-input {
   width: 50%; /* Takes up half of the screen */
@@ -83,7 +92,83 @@ ion-button.selected {
   color: #0a0a0a;
   // flex: 1;
 }
+.no-border {
+  border: 0px solid black; /* Black border around the input */
+
+  // flex: 1;
+}
 .forInput {
   // flex: 1;
   margin-left: 10px;
+}
+// ion-footer {
+//   position: fixed;
+//   bottom: 0;
+//   width: 100%;
+//   background: white;
+// }
+
+ion-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  justify-content: center;
+  align-items: center;
+}
+
+.fotter-color {
+  --background: white;
+  justify-content: center;
+  align-items: center;
+}
+
+.send-button {
+  height: 100%;
+  margin: 0;
+}
+.input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+  justify-content: center;
+  height: 100%;
+  padding-left: 10px;
+
+  background: transparent;
+  border: 1px solid black;
+  border-radius: 20px;
+
+  overflow: hidden;
+}
+.text-area {
+  --color: #0a0a0a;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  --highlight-color: #0a0a0a;
+  --padding-top: 7px;
+  --padding-bottom: 7px;
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0px;
+  // --inner-padding-top: 100px;
+  // --inner-padding-bottom: 100px;
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+  --highlight-height: 0;
+  min-height: auto;
+}
+.custom-back-button {
+  --padding-start: 7px;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  margin: 0;
+  --min-width: auto; /* Adjust min-width if necessary */
+  --background: transparent; /* Adjust background if needed */
 }
