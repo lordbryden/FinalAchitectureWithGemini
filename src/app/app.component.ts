@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
+
+import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -20,6 +22,6 @@ export class AppComponent {
     await StatusBar.setBackgroundColor({ color: '#fefefe' }); // Use your header color here
 
     // Optionally set the style to default, dark, or light
-    await StatusBar.setStyle({ style: Style.Default });
+    await StatusBar.setStyle({ style: Style.Light });
   }
 }
