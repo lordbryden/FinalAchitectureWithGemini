@@ -11,6 +11,8 @@ interface Segment {
   length: number;
   angle: number;
 }
+type SimpleSegment = [string, string, string, string, number, number];
+
 
 interface Point {
   x: number;
@@ -35,7 +37,7 @@ export class AutoDrawService implements OnInit {
 
 
   }
-  async drawShape(segments: Segment[], delayMs: number = 500) {
+  async drawShape(segments: SimpleSegment[], delayMs: number = 500) {
     this.calculateAndStorePoints(segments);
     const bounds = this.calculateBounds(Array.from(this.pointMap.values()));
     const offset = this.calculateOffset(bounds);
@@ -53,43 +55,41 @@ export class AutoDrawService implements OnInit {
     }
 
     this.layer.batchDraw();
-
-    // Check if the shape is larger than the canvas
   }
 
-  private calculateAndStorePoints(segments: Segment[]) {
+  private calculateAndStorePoints(segments: SimpleSegment[]) {
     this.pointMap.clear();
 
-    for (const segment of segments) {
-      if (!this.pointMap.has(segment.start)) {
-        this.pointMap.set(segment.start, { x: 0, y: 0 });
+    for (const [start, end, , , length, angle] of segments) {
+      if (!this.pointMap.has(start)) {
+        this.pointMap.set(start, { x: 0, y: 0 });
       }
 
-      const startPoint = this.pointMap.get(segment.start)!;
-      const length = this.lengthToPixels(segment.length);
-      const angle = this.degreesToRadians(segment.angle);
+      const startPoint = this.pointMap.get(start)!;
+      const pixelLength = this.lengthToPixels(length);
+      const radianAngle = this.degreesToRadians(angle);
 
       const endPoint = {
-        x: startPoint.x + length * Math.cos(angle),
-        y: startPoint.y + length * Math.sin(angle)
+        x: startPoint.x + pixelLength * Math.cos(radianAngle),
+        y: startPoint.y + pixelLength * Math.sin(radianAngle)
       };
 
-      this.pointMap.set(segment.end, endPoint);
+      this.pointMap.set(end, endPoint);
     }
   }
 
-  private async drawSegmentFromStored(segment: Segment, delayMs: number) {
-    const startPoint = this.pointMap.get(segment.start);
-    const endPoint = this.pointMap.get(segment.end);
+  private async drawSegmentFromStored(segment: SimpleSegment, delayMs: number) {
+  const [start, end, , type] = segment;
+  const startPoint = this.pointMap.get(start);
+  const endPoint = this.pointMap.get(end);
 
-    if (!startPoint || !endPoint) {
-      console.error(`Unable to find points for segment: ${segment.name}`);
-      return;
-    }
-
-    await this.drawSegmentWithDelay(segment.type, startPoint.x, startPoint.y, endPoint.x, endPoint.y, delayMs);
+  if (!startPoint || !endPoint) {
+    console.error(`Unable to find points for segment: ${segment[2]}`);
+    return;
   }
 
+  await this.drawSegmentWithDelay(type, startPoint.x, startPoint.y, endPoint.x, endPoint.y, delayMs);
+}
   private drawSegmentWithDelay(type: string, startX: number, startY: number, endX: number, endY: number, delayMs: number): Promise<void> {
     return new Promise((resolve) => {
       setTimeout(() => {

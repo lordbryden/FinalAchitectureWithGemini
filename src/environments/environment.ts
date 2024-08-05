@@ -4,7 +4,15 @@
 
 export const environment = {
   production: false,
-  GeminiKey: 'AIzaSyCxgpiLU_4XZudbIQ3Nsw9RYQbpNrRywq0'
+  GeminiKey: 'AIzaSyCxgpiLU_4XZudbIQ3Nsw9RYQbpNrRywq0',
+  projectId: 'gen-lang-client-0005422815',
+  modelId : 'tunedModels/copy-of-plan-house-model-a5iltlw1z6df',
+  GOOGLE_CLIENT_SECRET: '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',
+  GOOGLE_REDIRECT_URI: 'http://localhost:8100/drawing/0',
+  googleCloudProjectId: '721266053844',
+  googleCloudLocation: 'us-central1',
+  vertexAiModel: 'projects/721266053844/locations/us-central1/endpoints/4466548284537700352'
+
 };
 
 /*
