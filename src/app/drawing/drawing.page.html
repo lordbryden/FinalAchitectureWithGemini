@@ -331,6 +331,12 @@
                     <ion-col>
                         <ion-button (click)="saveDrawing()">Save Drawing</ion-button>
                     </ion-col>
+                    <!-- <ion-col>
+                        <ion-button (click)="generateContent()">Send Gemini</ion-button>
+                    </ion-col>
+                    <ion-col>
+                        <ion-button (click)="drawSquare(segment1)">draw</ion-button>
+                    </ion-col> -->
                     <!-- Additional buttons will be added here -->
                 </ion-row>
             </ion-grid>
@@ -382,7 +388,7 @@
             </ion-buttons>
             <div class="input-container">
                 <ion-textarea class="text-area" [(ngModel)]="message" placeholder="Type a message..." autoGrow="true" rows="1"></ion-textarea>
-                <ion-button fill="clear" (click)="sendMessage()" [disabled]="!message.trim()" class="send-button">
+                <ion-button fill="clear" (click)="generateContent()" [disabled]="!message.trim()" class="send-button">
                     <ion-icon name="send" color="primary"></ion-icon>
                 </ion-button>
             </div>
