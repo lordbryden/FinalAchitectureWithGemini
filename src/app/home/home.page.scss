@@ -65,7 +65,7 @@ $primary-color: #3880ff; // Adjust color as needed
 
 .design-card {
   flex-shrink: 0;
-  padding: 12px;
+  padding: 6px;
   margin-bottom: 15px;
   display: inline-block;
 }
@@ -76,8 +76,11 @@ $primary-color: #3880ff; // Adjust color as needed
   gap: 1rem;
 
   .design-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: auto;
-    display: inline-block;
+    // display: inline-block;
   }
 }
 .background {

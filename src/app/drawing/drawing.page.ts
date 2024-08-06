@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Line, LineBasicMaterial } from 'three';
-import { Subscription } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
+import { LoadingController, MenuController, Platform } from '@ionic/angular';
 
+import { AlertController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 import { AutoDrawService } from '../services/auto-draw.service';
 import { CSG } from 'three-csg-ts';
 import { ColorService } from '../services/color.service';
@@ -12,19 +14,14 @@ import { DrawingService } from '../services/drawing.service';
 import { GeminiService } from '../services/gemini.service';
 import { GridService } from '../services/grid.service';
 import Konva from 'konva';
-import { LoadingController, MenuController, Platform } from '@ionic/angular';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter';
-
-import { ActivatedRoute, Router } from '@angular/router';
 import { SaveDrawingService } from '../services/save-drawing.service';
-import { AlertController } from '@ionic/angular';
-import { AuthService } from '../services/auth.service';
-
+import { Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
-  selector: 'app-drawing',
   templateUrl: './drawing.page.html',
   styleUrls: ['./drawing.page.scss'],
 })
@@ -70,13 +67,45 @@ export class DrawingPage {
     },
   ];
 
+  segment1 = [
+    ['A1', 'A2', 'External wall 1', 'wall', '12000', '0'],
+    ['A2', 'A3', 'External wall 2', 'wall', '10000', '90'],
+    ['A3', 'A4', 'External wall 3', 'wall', '12000', '180'],
+    ['A4', 'A1', 'External wall 4', 'wall', '10000', '270'],
+    ['A2', 'A5', 'internal wall 1', 'wall', '5500', '180'],
+    ['A5', 'A6', 'internal wall 2', 'wall', '4800', '90'],
+    ['A6', 'A7', 'internal wall 3', 'wall', '5500', '0'],
+    ['A3', 'A10', 'internal wall 4', 'wall', '5500', '180'],
+    ['A10', 'A9', 'internal wall 5', 'wall', '3700', '270'],
+    ['A9', 'A8', 'internal wall 6', 'wall', '5500', '0'],
+    ['A9', 'A11', 'internal wall 7', 'wall', '2000', '0'],
+    ['A11', 'A12', 'internal wall 8', 'wall', '2000', '270'],
+    ['A1', 'A13', 'internal wall 9', 'wall', '3500', '0'],
+    ['A13', 'A14', 'internal wall 10', 'wall', '4800', '90'],
+    ['A14', 'A15', 'internal wall 11', 'wall', '3500', '180'],
+    ['A4', 'A17', 'Door 1', 'door', '2000', '0'],
+    ['A9', 'A11', 'Door 2', 'door', '1200', '0'],
+    ['A11', 'A32', 'internal wall 12', 'wall', '400', '270'],
+    ['A32', 'A16', 'Door 3', 'door', '800', '270'],
+    ['A6', 'A12', 'Door 4', 'door', '1200', '0'],
+    ['A13', 'A18', 'internal wall 13', 'wall', '1600', '90'],
+    ['A18', 'A19', 'door 5', 'door', '1800', '90'],
+    ['A10', 'A20', 'internal wall 14', 'wall', '800', '180'],
+    ['A20', 'A21', 'Window 1', 'window', '2000', '180'],
+    ['A3', 'A22', 'internal wall 15', 'wall', '800', '270'],
+    ['A22', 'A23', 'Window 2', 'window', '1800', '270'],
+    ['A8', 'A24', 'internal wall 16', 'wall', '500', '270'],
+    ['A24', 'A25', 'Window 3', 'window', '800', '270'],
+    ['A7', 'A26', 'internal wall 17', 'wall', '1000', '270'],
+    ['A26', 'A27', 'Window 4', 'window', '2000', '270'],
+    ['A5', 'A28', 'internal wall 18', 'wall', '1000', '180'],
+    ['A28', 'A29', 'Window 5', 'window', '1500', '180'],
+    ['A1', 'A30', 'internal wall 19', 'wall', '1000', '90'],
+    ['A30', 'A31', 'Window 6', 'window', '2000', '90'],
+  ];
 
-  segment1 =[["A1", "A2", "External wall 1", "wall", "12000", "0"], ["A2", "A3", "External wall 2", "wall", "10000", "90"], ["A3", "A4", "External wall 3", "wall", "12000", "180"], ["A4", "A1", "External wall 4", "wall", "10000", "270"], ["A2", "A5", "internal wall 1", "wall", "5500", "180"], ["A5", "A6", "internal wall 2", "wall", "4800", "90"], ["A6", "A7", "internal wall 3", "wall", "5500", "0"], ["A3", "A10", "internal wall 4", "wall", "5500", "180"], ["A10", "A9", "internal wall 5", "wall", "3700", "270"], ["A9", "A8", "internal wall 6", "wall", "5500", "0"], ["A9", "A11", "internal wall 7", "wall", "2000", "0"], ["A11", "A12", "internal wall 8", "wall", "2000", "270"], ["A1", "A13", "internal wall 9", "wall", "3500", "0"], ["A13", "A14", "internal wall 10", "wall", "4800", "90"], ["A14", "A15", "internal wall 11", "wall", "3500", "180"], ["A4", "A17", "Door 1", "door", "2000", "0"], ["A9", "A11", "Door 2", "door", "1200", "0"], ["A11", "A32", "internal wall 12", "wall", "400", "270"], ["A32", "A16", "Door 3", "door", "800", "270"], ["A6", "A12", "Door 4", "door", "1200", "0"], ["A13", "A18", "internal wall 13", "wall", "1600", "90"], ["A18", "A19", "door 5", "door", "1800", "90"], ["A10", "A20", "internal wall 14", "wall", "800", "180"], ["A20", "A21", "Window 1", "window", "2000", "180"], ["A3", "A22", "internal wall 15", "wall", "800", "270"], ["A22", "A23", "Window 2", "window", "1800", "270"], ["A8", "A24", "internal wall 16", "wall", "500", "270"], ["A24", "A25", "Window 3", "window", "800", "270"], ["A7", "A26", "internal wall 17", "wall", "1000", "270"], ["A26", "A27", "Window 4", "window", "2000", "270"], ["A5", "A28", "internal wall 18", "wall", "1000", "180"], ["A28", "A29", "Window 5", "window", "1500", "180"], ["A1", "A30", "internal wall 19", "wall", "1000", "90"], ["A30", "A31", "Window 6", "window", "2000", "90"]
-]
-
-
-   drawingId: string = '0';
-   drawingTitle: string = '';
+  drawingId: string = '0';
+  drawingTitle: string = '';
   drawingDescription: string = '';
   generatedContent: any = '';
   public lengthScaleFactor: number = 1.7;
@@ -108,13 +137,10 @@ export class DrawingPage {
     private route: ActivatedRoute,
     private saveService: SaveDrawingService,
     private alertController: AlertController,
-    private router : Router,
+    private router: Router,
     private platform: Platform,
     private authService: AuthService,
     private loadingController: LoadingController
-
-
-
   ) {
     this.currentWallColor = this.colorService.DEFAULT_WALL_COLOR;
     this.currentDoorColor = this.colorService.DEFAULT_DOOR_COLOR;
@@ -212,14 +238,17 @@ export class DrawingPage {
     if (this.firstMenu) {
       this.containerRef.nativeElement.style.display = 'none';
       this.threeContainerRef.nativeElement.style.display = 'block';
-      console.log(3)
+      console.log(3);
     }
     this.firstMenu = !this.firstMenu;
-
   }
   roofPlacement() {
     this.closeSecondMenu();
     this.toggleRoof();
+  }
+  savePlan() {
+    this.saveDrawing();
+    this.closeFirstMenu();
   }
   toggleDimentionMode() {
     this.toggleDistanceLabels();
@@ -230,7 +259,7 @@ export class DrawingPage {
     this.closeSecondMenu();
     this.containerRef.nativeElement.style.display = 'block';
     this.threeContainerRef.nativeElement.style.display = 'none';
-    console.log(1)
+    console.log(1);
     this.firstMenu = !this.firstMenu;
 
     // if(this.firstMenu){
@@ -280,20 +309,18 @@ export class DrawingPage {
     this.route.paramMap.subscribe((params) => {
       this.drawingId = params.get('id') || '0';
       this.initializeDrawing();
-      if(this.drawingId === '0') this.drawingService.clearAllDrawings();
+      if (this.drawingId === '0') this.drawingService.clearAllDrawings();
     });
     this.containerRef.nativeElement.style.display = 'block';
     this.threeContainerRef.nativeElement.style.display = 'none';
-
   }
 
   ionViewDidEnter() {
-    this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(10, () => {
-      this.backToHome();
-    });
-
+    this.backButtonSubscription =
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        this.backToHome();
+      });
   }
-
 
   async backToHome() {
     if (this.drawingId === '0') {
@@ -308,15 +335,15 @@ export class DrawingPage {
               role: 'cancel',
               handler: () => {
                 this.router.navigate(['/home']);
-              }
+              },
             },
             {
               text: 'Yes',
               handler: () => {
                 this.openSaveDialog('home');
-              }
-            }
-          ]
+              },
+            },
+          ],
         });
 
         await alert.present();
@@ -336,16 +363,16 @@ export class DrawingPage {
               role: 'cancel',
               handler: () => {
                 this.router.navigate(['/home']);
-              }
+              },
             },
             {
               text: 'Yes',
               handler: () => {
                 this.saveDrawing();
                 this.router.navigate(['/home']);
-              }
-            }
-          ]
+              },
+            },
+          ],
         });
 
         await alert.present();
@@ -355,79 +382,82 @@ export class DrawingPage {
       }
     }
   }
- saveDrawing() {
-  if (this.drawingId === '0') {
-    this.openSaveDialog('drawing');
-  } else {
-    this.performSave();
-  }
-}
-async openSaveDialog(position : any) {
-  const alert = await this.alertController.create({
-    header: 'Save Drawing',
-    inputs: [
-      {
-        name: 'title',
-        type: 'text',
-        placeholder: 'Title'
-      },
-      {
-        name: 'description',
-        type: 'text',
-        placeholder: 'Description (max 30 characters)'
-      }
-    ],
-    buttons: [
-      {
-        text: 'Cancel',
-        role: 'cancel'
-      },
-      {
-        text: 'Save',
-        handler: (data) => {
-          this.drawingTitle = data.title;
-          this.drawingDescription = data.description;
-          this.performSave();
-          if(position === 'home'){
-            this.router.navigate(['/home'])
-          }
-        }
-      }
-    ]
-  });
-
-  await alert.present();
-}
-performSave() {
-  if (this.drawingId === '0') {
-    this.drawingId = Date.now().toString();
-  }
-  console.log('me')
-
-  this.saveService.saveDrawingToSession(this.drawingId, this.drawingTitle, this.drawingDescription);
-  this.hasChanges = false;  // Reset flag after saving
-
-}
-
-initializeDrawing() {
-  if (this.drawingId === '0') {
-    // New drawing, do nothing special
-  } else if (parseInt(this.drawingId) < 10) {
-    this.drawSquare(this.segment1);
-  } else {
-    const loadedData = this.loaddatafromstorage(this.drawingId);
-    if (loadedData) {
-      this.drawingTitle = loadedData.title;
-      this.drawingDescription = loadedData.description;
-      this.deserializeDrawing(loadedData.shapes);
-      this.currentMode = 'select';
+  saveDrawing() {
+    if (this.drawingId === '0') {
+      this.openSaveDialog('drawing');
     } else {
-      console.log('No saved drawing found for ID:', this.drawingId);
-      // Optionally start a new drawing or show a message to the user
+      this.performSave();
     }
   }
-  this.hasChanges = false;  // Reset flag when loading a drawing
-}
+  async openSaveDialog(position: any) {
+    const alert = await this.alertController.create({
+      header: 'Save Drawing',
+      inputs: [
+        {
+          name: 'title',
+          type: 'text',
+          placeholder: 'Title',
+        },
+        {
+          name: 'description',
+          type: 'text',
+          placeholder: 'Description (max 30 characters)',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Save',
+          handler: (data) => {
+            this.drawingTitle = data.title;
+            this.drawingDescription = data.description;
+            this.performSave();
+            if (position === 'home') {
+              this.router.navigate(['/home']);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+  performSave() {
+    if (this.drawingId === '0') {
+      this.drawingId = Date.now().toString();
+    }
+    console.log('me');
+
+    this.saveService.saveDrawingToSession(
+      this.drawingId,
+      this.drawingTitle,
+      this.drawingDescription
+    );
+    this.hasChanges = false; // Reset flag after saving
+  }
+
+  initializeDrawing() {
+    if (this.drawingId === '0') {
+      // New drawing, do nothing special
+    } else if (parseInt(this.drawingId) < 10) {
+      this.drawSquare(this.segment1);
+    } else {
+      const loadedData = this.loaddatafromstorage(this.drawingId);
+      if (loadedData) {
+        this.drawingTitle = loadedData.title;
+        this.drawingDescription = loadedData.description;
+        this.deserializeDrawing(loadedData.shapes);
+        this.currentMode = 'select';
+      } else {
+        console.log('No saved drawing found for ID:', this.drawingId);
+        // Optionally start a new drawing or show a message to the user
+      }
+    }
+    this.hasChanges = false; // Reset flag when loading a drawing
+  }
 
   deserializeDrawing(serializedData: string) {
     console.log('Deserializing drawing data:', serializedData);
@@ -465,7 +495,7 @@ initializeDrawing() {
   }
   initializeStage() {
     // const screenSize = Math.max(window.innerWidth, window.innerHeight);
-    const screen =( window.innerWidth + window.innerHeight)/1.7 ;
+    const screen = (window.innerWidth + window.innerHeight) / 1.7;
     // const stageSize = screenSize; // You can adjust this multiplier as needed
 
     this.stage = new Konva.Stage({
@@ -473,8 +503,6 @@ initializeDrawing() {
       width: screen,
       height: screen,
     });
-
-
   }
 
   initializeThreeJS() {
@@ -555,13 +583,13 @@ initializeDrawing() {
         if (this.currentMode === 'select') {
           if (this.drawingService.isDragging) {
             this.drawingService.continueDragging(pos);
-            this.hasChanges = true;  // Set flag when changes occur
+            this.hasChanges = true; // Set flag when changes occur
           } else {
             this.drawingService.updateSelection(pos);
           }
         } else {
           this.drawingService.continueDrawing(pos);
-          this.hasChanges = true;  // Set flag when changes occur
+          this.hasChanges = true; // Set flag when changes occur
         }
       }
     });
@@ -976,7 +1004,17 @@ initializeDrawing() {
 
   private drawWindow(
     start: THREE.Vector3,
-    end: THREE.Vector3,
+    end: THREE.Vector3, // const upperWallGeometry = new THREE.BoxGeometry(
+    //   doorLength,
+    //   8.5 - doorHeight,
+    //   wallWidth
+    // );
+    // const upperWallMaterial = new THREE.MeshLambertMaterial({
+    //   color: 0x484848,
+    // });
+    // const upperWall = new THREE.Mesh(upperWallGeometry, upperWallMaterial);
+
+    // upperWall.position.y = doorHeight / 2 + 0.75;
     windowHeight: number,
     wallWidth: number,
     wallHeight: number,
@@ -1362,7 +1400,7 @@ initializeDrawing() {
     link.download = `3d_model.${format}`;
     link.click();
   }
-    // result= [] ;
+  // result= [] ;
   // input = 'draw a 2 room house';
   // prediction: string | null = null;
   // async  runModel() {
@@ -1382,10 +1420,13 @@ initializeDrawing() {
     await this.simpleLoader('please wait ...');
 
     try {
-      const response = await firstValueFrom(this.geminiService.generateContent(this.message));
+      const response = await firstValueFrom(
+        this.geminiService.generateContent(this.message)
+      );
 
       console.log(response);
-      const segment1String = response.candidates[0].content.parts[0].text.trim();
+      const segment1String =
+        response.candidates[0].content.parts[0].text.trim();
       const segment1Array = this.convertToSingleArray(segment1String);
 
       if (segment1Array) {
@@ -1399,10 +1440,9 @@ initializeDrawing() {
     } finally {
       this.dismissLoader();
     }
-
   }
 
-  convertToSingleArray(segmentString : any) {
+  convertToSingleArray(segmentString: any) {
     // Remove the "segment1 = " part and any leading/trailing whitespace
     const cleanedString = segmentString.replace(/^segment1\s*=\s*/, '').trim();
 
@@ -1413,34 +1453,34 @@ initializeDrawing() {
     const arrayStrings = innerContent.match(/\[([^\]]+)\]/g);
 
     // Convert each array string to an actual array
-    const result = arrayStrings.map((str :any) => {
-        // Remove the square brackets
-        const content = str.slice(1, -1);
+    const result = arrayStrings.map((str: any) => {
+      // Remove the square brackets
+      const content = str.slice(1, -1);
 
-        // Split by comma, parse each element
-        return content.split(',').map((item: any) => {
-            item = item.trim().replace(/^['"]|['"]$/g, ''); // Remove quotes
-            return isNaN(item) ? item : Number(item); // Convert to number if possible
-        });
+      // Split by comma, parse each element
+      return content.split(',').map((item: any) => {
+        item = item.trim().replace(/^['"]|['"]$/g, ''); // Remove quotes
+        return isNaN(item) ? item : Number(item); // Convert to number if possible
+      });
     });
 
     // Return the result as a single array named segment1
     return result;
-}
-
-async simpleLoader(message: string) {
-  const loading = await this.loadingController.create({
-    message: message
-  });
-  await loading.present();
-}
-
-async dismissLoader() {
-  try {
-    await this.loadingController.dismiss();
-    console.log('Loader closed!');
-  } catch (err) {
-    console.log('Error occured : ', err);
   }
-}
+
+  async simpleLoader(message: string) {
+    const loading = await this.loadingController.create({
+      message: message,
+    });
+    await loading.present();
+  }
+
+  async dismissLoader() {
+    try {
+      await this.loadingController.dismiss();
+      console.log('Loader closed!');
+    } catch (err) {
+      console.log('Error occured : ', err);
+    }
+  }
 }
