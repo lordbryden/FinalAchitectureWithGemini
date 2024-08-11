@@ -40,10 +40,10 @@ export class DrawingPage {
   private walls: THREE.Mesh[] = [];
   private dimentionToggle = false;
   private gridToggle = false;
-  public wallHeight: number = 4000; // 5 meters in centimeters
-  public wallWidth: number = 300; // 30 centimeters
-  public doorHeight: number = 2000; // 3 meters in centimeters
-  public windowHeight: number = 1500; // Default window height in centimeters
+  public wallHeight: number = 6000; // 5 meters in centimeters
+  public wallWidth: number = 500; // 30 centimeters
+  public doorHeight: number = 4000; // 3 meters in centimeters
+  public windowHeight: number = 2500; // Default window height in centimeters
 
   currentWallColor: string;
   currentDoorColor: string;
@@ -66,49 +66,78 @@ export class DrawingPage {
       },
     },
   ];
+//   segment1 = [
+//     ['A1','A2','External wall 1','wall',7500,0],
+//     ['A2','A3','External wall 2','wall',9000,90],
+//     ['A3','A4','External wall 3','wall',7500,180],
+//     ['A4','A1','External wall 4','wall',9000,270],
+//     ['A1','A5','Inner wall 1','wall',5100,0],
+//     ['A5','A6','Inner wall 2','wall',4600,90],
+//     ['A6','A7','Inner wall 3','wall',5100,180],
+//     ['A2','A8','Inner wall 4','wall',3400,90],
+//     ['A8','A9','Inner wall 5','wall',2400,180],
+//     ['A3','A10','Inner wall 6','wall',3600,270],
+//     ['A10','A11','Inner wall 7','wall',2700,180],
+//     ['A11','A12','Inner wall 8','wall',3600,90],
+//     ['A6','A13','Door 1','door',900,180],
+//     ['A9','A14','Door 2','door',900,0],
+//     ['A11','A15','Door 3','door',900,0],
+//     ['A12','A16','Door 5','door',900,180],
+//     ['A1','A17','Window External wall 1','wall',1150,0],
+//     ['A17','A18','Window 1','window',1700,0],
+//     ['A2','A19','Window External wall 2','wall',780,180],
+//     ['A19','A20','Window 2','window',720,180],
+//     ['A3','A21','Window External wall 3','wall',350,180],
+//     ['A21','A22','Window 3','window',1700,180],
+//     ['A4','A23','Window External wall 4','wall',1050,0],
+//     ['A23','A24','Window 4','window',1700,0]
+// ];
 
-  segment1 = [
-    ['A1', 'A2', 'External wall 1', 'wall', '12000', '0'],
-    ['A2', 'A3', 'External wall 2', 'wall', '10000', '90'],
-    ['A3', 'A4', 'External wall 3', 'wall', '12000', '180'],
-    ['A4', 'A1', 'External wall 4', 'wall', '10000', '270'],
-    ['A2', 'A5', 'internal wall 1', 'wall', '5500', '180'],
-    ['A5', 'A6', 'internal wall 2', 'wall', '4800', '90'],
-    ['A6', 'A7', 'internal wall 3', 'wall', '5500', '0'],
-    ['A3', 'A10', 'internal wall 4', 'wall', '5500', '180'],
-    ['A10', 'A9', 'internal wall 5', 'wall', '3700', '270'],
-    ['A9', 'A8', 'internal wall 6', 'wall', '5500', '0'],
-    ['A9', 'A11', 'internal wall 7', 'wall', '2000', '0'],
-    ['A11', 'A12', 'internal wall 8', 'wall', '2000', '270'],
-    ['A1', 'A13', 'internal wall 9', 'wall', '3500', '0'],
-    ['A13', 'A14', 'internal wall 10', 'wall', '4800', '90'],
-    ['A14', 'A15', 'internal wall 11', 'wall', '3500', '180'],
-    ['A4', 'A17', 'Door 1', 'door', '2000', '0'],
-    ['A9', 'A11', 'Door 2', 'door', '1200', '0'],
-    ['A11', 'A32', 'internal wall 12', 'wall', '400', '270'],
-    ['A32', 'A16', 'Door 3', 'door', '800', '270'],
-    ['A6', 'A12', 'Door 4', 'door', '1200', '0'],
-    ['A13', 'A18', 'internal wall 13', 'wall', '1600', '90'],
-    ['A18', 'A19', 'door 5', 'door', '1800', '90'],
-    ['A10', 'A20', 'internal wall 14', 'wall', '800', '180'],
-    ['A20', 'A21', 'Window 1', 'window', '2000', '180'],
-    ['A3', 'A22', 'internal wall 15', 'wall', '800', '270'],
-    ['A22', 'A23', 'Window 2', 'window', '1800', '270'],
-    ['A8', 'A24', 'internal wall 16', 'wall', '500', '270'],
-    ['A24', 'A25', 'Window 3', 'window', '800', '270'],
-    ['A7', 'A26', 'internal wall 17', 'wall', '1000', '270'],
-    ['A26', 'A27', 'Window 4', 'window', '2000', '270'],
-    ['A5', 'A28', 'internal wall 18', 'wall', '1000', '180'],
-    ['A28', 'A29', 'Window 5', 'window', '1500', '180'],
-    ['A1', 'A30', 'internal wall 19', 'wall', '1000', '90'],
-    ['A30', 'A31', 'Window 6', 'window', '2000', '90'],
-  ];
+segment1 = [['A1','A2','External wall 1','wall',13000,0],['A2','A3','External wall 2','wall',11500,90],['A3','A4','External wall 3','wall',13000,180],['A4','A1','External wall 4','wall',11500,270],['A1','A5','Internal wall 1','wall',6500,0],['A5','A6','Internal wall 2','wall',6000,90],['A6','A7','Internal wall 3','wall',6500,180],['A4','A10','Internal wall 4','wall',6500,0],['A10','A9','Internal wall 5','wall',4300,270],['A9','A8','Internal wall 6','wall',6500,180],['A1','A33','Internal wall 7','wall',5000,0],['A33','A34','Internal wall 8','wall',2000,90],['A34','A35','Internal wall 9','wall',5000,180],['A9','A11','Internal wall 10','wall',1600,180],['A11','A12','Internal wall 11','wall',1600,270],['A2','A13','Internal wall 12','wall',4500,180],['A13','A14','Internal wall 13','wall',5200,90],['A14','A15','Internal wall 14','wall',4500,0],['A10','A17','Door 1','door',2300,0],['A9','A11','Door 2','door',1600,180],['A11','A32','Internal wall 15','wall',450,270],['A32','A16','Door 3','door',650,270],['A34','A36','Internal wall 16','wall',450,180],['A36','A37','Door 4','door',1300,180],['A6','A12','Door 5','door',1600,180],['A13','A18','Internal wall 17','wall',1900,90],['A18','A19','Door 6','door',2300,90],['A3','A20','Internal wall 18','wall',800,180],['A20','A21','Window 1','window',2000,180],['A4','A22','Internal wall 19','wall',800,270],['A22','A23','Window 2','window',1600,270],['A8','A24','Internal wall 20','wall',300,270],['A24','A25','Window 3','window',700,270],['A35','A38','Internal wall 21','wall',400,270],['A38','A39','Window 4','window',800,270],['A7','A26','Internal wall 22','wall',800,270],['A26','A27','Window 5','window',2000,270],['A5','A28','Internal wall 23','wall',350,0],['A28','A29','Window 6','window',1000,0],['A2','A30','Internal wall 24','wall',1150,90],['A30','A31','Window 7','window',2300,90]];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  canUndo: boolean = false;
+  canRedo: boolean = false;
   drawingId: string = '0';
   drawingTitle: string = '';
   drawingDescription: string = '';
   generatedContent: any = '';
-  public lengthScaleFactor: number = 1.7;
+  public lengthScaleFactor: number = 1.7
+  ;
   private backButtonSubscription!: Subscription;
   private hasChanges: boolean = false;
   message: string = '';
@@ -196,12 +225,18 @@ export class DrawingPage {
 
   undo() {
     console.log('Undo clicked');
+    this.drawingService.performUndo();
+    this.updateUndoRedoState();
+
     // Implement your undo logic here
   }
 
   redo() {
     console.log('Redo clicked');
     // Implement your redo logic here
+    this.drawingService.performRedo();
+    this.updateUndoRedoState();
+
   }
   closeFirstMenu() {
     this.menuCtrl.close('first-menu');
@@ -284,6 +319,7 @@ export class DrawingPage {
 
     // this.authService.login();
     this.initializeStage();
+    // this.drawSquare(this.segment1)
     this.gridService.createGrid(this.stage);
     this.drawingService.setStage(this.stage);
     this.setupEventListeners();
@@ -320,8 +356,29 @@ export class DrawingPage {
       this.platform.backButton.subscribeWithPriority(10, () => {
         this.backToHome();
       });
+      this.showInitialAlert();
+      // this.drawSquare(this.segment1)
+
   }
 
+  async showInitialAlert() {
+    // Check if the alert has already been shown
+    const hasShownAlert = await localStorage.getItem('alertShown');
+    console.log(hasShownAlert)
+    if (!hasShownAlert) {
+      // If not shown, create and present the alert
+      const alert = await this.alertController.create({
+        header: 'Important Notice',
+        message: 'Due to restrictions from Gemini, we can only draw 1 room, studio, and 2 room apartments.',
+        buttons: ['OK']
+      });
+
+      await alert.present();
+
+      // Set flag in localStorage to indicate the alert has been shown
+      localStorage.setItem('alertShown', 'true');
+    }
+  }
   async backToHome() {
     if (this.drawingId === '0') {
       // For new drawings
@@ -434,7 +491,8 @@ export class DrawingPage {
     this.saveService.saveDrawingToSession(
       this.drawingId,
       this.drawingTitle,
-      this.drawingDescription
+      this.drawingDescription,
+      this.currentScale
     );
     this.hasChanges = false; // Reset flag after saving
   }
@@ -449,6 +507,10 @@ export class DrawingPage {
       if (loadedData) {
         this.drawingTitle = loadedData.title;
         this.drawingDescription = loadedData.description;
+        if (loadedData.pixelScalemeter) {
+          this.currentScale = loadedData.pixelScalemeter;
+          this.drawingService.setScale(this.currentScale);
+        }
         this.deserializeDrawing(loadedData.shapes);
         this.currentMode = 'select';
       } else {
@@ -482,7 +544,8 @@ export class DrawingPage {
     this.drawingService.startDrawing(startPos);
     this.drawingService.continueDrawing(endPos);
     this.drawingService.stopDrawing();
-  }
+    this.selectMode()
+    }
 
   loaddatafromstorage(id: string) {
     console.log(id);
@@ -563,12 +626,18 @@ export class DrawingPage {
 
   setupEventListeners() {
     this.stage.on('mousedown touchstart', (e) => {
+      if (this.drawingService.isAutoDrawing()) {
+        e.cancelBubble = true;
+        return;
+      }
       const pos = this.stage.getPointerPosition();
       if (pos) {
         if (this.currentMode === 'select') {
           if (e.target === this.stage) {
+
             this.drawingService.startSelection(pos);
           } else {
+            console.log('me')
             this.drawingService.startDragging(pos);
           }
         } else {
@@ -578,6 +647,10 @@ export class DrawingPage {
     });
 
     this.stage.on('mousemove touchmove', (e) => {
+      if (this.drawingService.isAutoDrawing()) {
+        e.cancelBubble = true;
+        return;
+      }
       const pos = this.stage.getPointerPosition();
       if (pos) {
         if (this.currentMode === 'select') {
@@ -595,6 +668,10 @@ export class DrawingPage {
     });
 
     this.stage.on('mouseup touchend', () => {
+      if (this.drawingService.isAutoDrawing()) {
+        // e.cancelBubble = true;
+        return;
+      }
       if (this.currentMode === 'select') {
         if (this.drawingService.isDragging) {
           this.drawingService.stopDragging();
@@ -603,6 +680,8 @@ export class DrawingPage {
         }
       } else {
         this.drawingService.stopDrawing();
+        this.updateUndoRedoState();
+
       }
     });
 
@@ -626,11 +705,18 @@ export class DrawingPage {
 
   async drawSquare(segment: any) {
     // Draw a square starting at (100, 100) with side length 200
-    this.drawingService.clearAllDrawings();
+
+    await this.drawingService.clearAllDrawings();
+    this.disableBackButton();
     await this.autoDrawService.drawShape(segment); // Start drawing at (100, 100)
 
     this.currentScale = this.autoDrawService.checkShapeSize();
-
+    this.hasChanges = true;
+    const shapes =this.drawingService.getAllShapes() as any;
+    console.log(shapes)
+    this.drawingService.addToUndoStack('add', shapes);
+    this.canUndo= this.drawingService.canUndo();
+    this.enableBackButton();
     this.setMode('select');
   }
   toggleDistanceLabels() {
@@ -979,29 +1065,139 @@ export class DrawingPage {
     color: number
   ) {
     const doorLength = start.distanceTo(end);
-    // Use exact wall width for the door
-    const doorGeometry = new THREE.BoxGeometry(
-      doorLength,
-      doorHeight,
-      wallWidth
-    );
+    const doorGeometry = new THREE.BoxGeometry(doorLength, doorHeight, wallWidth);
     const doorMaterial = new THREE.MeshLambertMaterial({
       color: this.colorService.getCurrentDoorColor(),
     });
     const door = new THREE.Mesh(doorGeometry, doorMaterial);
 
-    const midpoint = new THREE.Vector3()
-      .addVectors(start, end)
-      .multiplyScalar(0.5);
+    const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
     door.position.set(midpoint.x, doorHeight / 2, midpoint.z);
     const angle = Math.atan2(end.z - start.z, end.x - start.x);
     door.rotation.y = -angle;
     door.name = 'door';
 
+    // Function to create a doorknob and handle
+    const createDoorHandle = (side: number) => {
+      const knobRadius = doorHeight * 0.02;
+      const knobGeometry = new THREE.SphereGeometry(knobRadius, 32, 32);
+      const knobMaterial = new THREE.MeshLambertMaterial({ color: 0xc0c0c0 });
+      const knob = new THREE.Mesh(knobGeometry, knobMaterial);
+
+      const handleLength = doorLength * 0.20;
+      const handleRadius = knobRadius * 0.4;
+      const handleGeometry = new THREE.CylinderGeometry(handleRadius, handleRadius, handleLength, 32);
+      const handleMaterial = new THREE.MeshLambertMaterial({ color: 0xc0c0c0 });
+      const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+
+      handle.position.set(handleLength / 2, 0, 0);
+      handle.rotation.z = Math.PI / 2;
+
+      const handleGroup = new THREE.Group();
+      handleGroup.add(knob);
+      handleGroup.add(handle);
+
+      const knobOffset = new THREE.Vector3(
+        -doorLength * 0.4,
+        0,
+        side * (wallWidth / 2 + knobRadius / 2)
+      );
+      knobOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), door.rotation.y);
+      handleGroup.position.copy(door.position).add(knobOffset);
+      handleGroup.rotation.y = -angle;
+
+      return handleGroup;
+    };
+
+    // Create handles for both sides
+    const frontHandle = createDoorHandle(1);
+    const backHandle = createDoorHandle(-1);
+
+    // Function to create a rectangle
+    const createRectangle = (width: number, height: number, depth: number, color: THREE.Color) => {
+      const geometry = new THREE.BoxGeometry(width, height, depth);
+      const material = new THREE.MeshLambertMaterial({ color: color });
+      return new THREE.Mesh(geometry, material);
+    };
+
+    // Function to add designs to one side of the door
+    const addDoorDesigns = (isBackSide: boolean) => {
+      const rectangleWidthPercentage = 0.8;
+      const rectangleHeightPercentage = 0.15;
+      const rectangleDepthPercentage = 0.05;
+      const sideMultiplier = isBackSide ? -1 : 1;
+
+      const rectangleWidth = doorLength * rectangleWidthPercentage;
+      const rectangleHeight = doorHeight * rectangleHeightPercentage;
+      const rectangleDepth = wallWidth * rectangleDepthPercentage;
+
+      const rectangleColor = new THREE.Color(doorMaterial.color).multiplyScalar(0.9);
+
+      const topRectangle = createRectangle(rectangleWidth, rectangleHeight, rectangleDepth, rectangleColor);
+      topRectangle.position.set(
+        0,
+        doorHeight / 2 - doorHeight * 0.05 - rectangleHeight / 2,
+        sideMultiplier * (wallWidth / 2 + rectangleDepth / 2)
+      );
+      door.add(topRectangle);
+
+      const bottomRectangle = createRectangle(rectangleWidth, rectangleHeight, rectangleDepth, rectangleColor);
+      bottomRectangle.position.set(
+        0,
+        -doorHeight / 2 + doorHeight * 0.05 + rectangleHeight / 2,
+        sideMultiplier * (wallWidth / 2 + rectangleDepth / 2)
+      );
+      door.add(bottomRectangle);
+
+      const middleRectangle = createRectangle(rectangleWidth, rectangleHeight, rectangleDepth, rectangleColor);
+      middleRectangle.position.set(
+        0,
+        0,
+        sideMultiplier * (wallWidth / 2 + rectangleDepth / 2)
+      );
+      door.add(middleRectangle);
+
+      const verticalRectWidth = doorLength * 0.1;
+      const verticalRectHeight = doorHeight * 0.6;
+      const leftVertRect = createRectangle(verticalRectWidth, verticalRectHeight, rectangleDepth, rectangleColor);
+      leftVertRect.position.set(
+        -doorLength / 2 + verticalRectWidth / 2,
+        0,
+        sideMultiplier * (wallWidth / 2 + rectangleDepth / 2)
+      );
+      door.add(leftVertRect);
+
+      const rightVertRect = createRectangle(verticalRectWidth, verticalRectHeight, rectangleDepth, rectangleColor);
+      rightVertRect.position.set(
+        doorLength / 2 - verticalRectWidth / 2,
+        0,
+        sideMultiplier * (wallWidth / 2 + rectangleDepth / 2)
+      );
+      door.add(rightVertRect);
+    };
+
+    // Add designs to both sides of the door
+    addDoorDesigns(false); // Front side
+    addDoorDesigns(true);  // Back side
+
+    this.colorService.doorColor$.subscribe((newColor) => {
+      if (doorMaterial instanceof THREE.MeshLambertMaterial) {
+        doorMaterial.color.setStyle(newColor);
+        door.children.forEach(child => {
+          if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshLambertMaterial) {
+            child.material.color.setStyle(newColor).multiplyScalar(0.9);
+            child.material.needsUpdate = true;
+          }
+        });
+        doorMaterial.needsUpdate = true;
+      }
+    });
+
     this.scene.add(door);
+    this.scene.add(frontHandle);
+    this.scene.add(backHandle);
     this.createCutout(door, doorHeight, 0, wallHeight);
   }
-
   private drawWindow(
     start: THREE.Vector3,
     end: THREE.Vector3, // const upperWallGeometry = new THREE.BoxGeometry(
@@ -1417,7 +1613,7 @@ export class DrawingPage {
   input: string = 'draw a 2 room house';
   response: string = '';
   async generateContent() {
-    await this.simpleLoader('please wait ...');
+    await this.simpleLoader('please wait while we fetch house');
 
     try {
       const response = await firstValueFrom(
@@ -1472,15 +1668,34 @@ export class DrawingPage {
     const loading = await this.loadingController.create({
       message: message,
     });
+    this.disableBackButton();
     await loading.present();
   }
 
   async dismissLoader() {
+    this.enableBackButton();
     try {
       await this.loadingController.dismiss();
       console.log('Loader closed!');
     } catch (err) {
       console.log('Error occured : ', err);
     }
+  }
+ private updateUndoRedoState() {
+    this.canUndo = this.drawingService.canUndo();
+    this.canRedo = this.drawingService.canRedo();
+  }
+
+
+  disableBackButton() {
+    this.platform.backButton.subscribeWithPriority(9999, () => {
+      // Do nothing, effectively disabling the back button
+    });
+  }
+
+  enableBackButton() {
+    this.platform.backButton.subscribeWithPriority(9999, () => {
+      this.backToHome();
+    });
   }
 }

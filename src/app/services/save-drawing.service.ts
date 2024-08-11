@@ -7,6 +7,7 @@ interface DrawingData {
   title: string;
   description: string;
   thumbnail: string;
+  pixelScalemeter: any
 }
 @Injectable({
   providedIn: 'root'
@@ -51,14 +52,15 @@ export class SaveDrawingService {
     this.drawingService.continueDrawing(endPos);
     this.drawingService.stopDrawing();
   }
-  saveDrawingToSession(id: string, title: string, description: string) {
+  saveDrawingToSession(id: string, title: string, description: string , currentScale : any) {
     const thumbnail = this.drawingService.generateThumbnail(500, 500); // Adjust size as needed
 
     const drawingData: DrawingData = {
       shapes: this.serializeDrawing(),
       title: title,
       description: description,
-      thumbnail: thumbnail
+      thumbnail: thumbnail,
+      pixelScalemeter: currentScale
     };
     localStorage.setItem(`${id}`, JSON.stringify(drawingData));
   }

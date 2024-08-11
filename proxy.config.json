@@ -1,9 +1,0 @@
-{
-    "/api": {
-        "target": "https://us-central1-aiplatform.googleapis.com",
-        "changeOrigin": true,
-        "pathRewrite": {
-            "^/api": "/v1"
-        }
-    }
-}

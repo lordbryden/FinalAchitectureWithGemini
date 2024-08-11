@@ -20,14 +20,15 @@
     </div>
 
     <!-- Pre-Built Designs Section -->
-    <div class="pre-built-designs">
+    <!-- <div class="pre-built-designs">
         <div class="blackColor">PRE-BUILDED DESIGN</div>
         <div class="horizontal-scroll-container">
             <div class="design-card" *ngFor="let design of previousDesigns">
+
                 <app-house-card [design]="design" (click)="goToDesign(design.id)" />
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Previous Designs Section -->
     <div class="previous-designs">
@@ -35,6 +36,9 @@
 
         <div class="design-grid">
             <div class="design-card" *ngFor="let design of previousDesigns">
+                <button button class="delete-button" (click)="deleteDesign(design.id)">
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
                 <app-house-card [design]="design" (click)="goToDesign(design.id)" />
             </div>
         </div>

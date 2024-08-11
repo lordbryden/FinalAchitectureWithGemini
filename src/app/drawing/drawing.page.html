@@ -1,204 +1,89 @@
-<ion-menu
-  side="end"
-  contentId="main-content"
-  menuId="first-menu"
-  class="background"
-  swipeGesture="false"
->
-  <ion-content class="ion-padding" class="background">
-    <div class="image-container" class="background">
-      <img src="/assets/first.jpg" alt="Half Image" class="image-containers" />
-    </div>
-    <div class="flex">
-      <label for="scaleInput" class="color-black forInput">Scale</label>
-      <input
-        id="scaleInput"
-        type="number"
-        [(ngModel)]="currentScale"
-        (change)="updateScale()"
-        class="half-width-input"
-      />
-    </div>
+<ion-menu side="end" contentId="main-content" menuId="first-menu" class="background" swipeGesture="false">
+    <ion-content class="ion-padding" class="background">
+        <div class="image-container" class="background">
+            <img src="/assets/first.jpg" alt="Half Image" class="image-containers" />
+        </div>
+        <div class="flex">
+            <label for="scaleInput" class="color-black forInput">Scale</label>
+            <input id="scaleInput" type="number" [(ngModel)]="currentScale" (change)="updateScale()" class="half-width-input" />
+        </div>
 
-    <ion-item
-      class="background"
-      lines="none"
-      (click)="selectDoor()"
-      [class.selected]="currentMode === 'door'"
-    >
-      <fa-icon
-        [icon]="['fas', 'door-closed']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Door</ion-text>
-    </ion-item>
-    <ion-item
-      class="background"
-      lines="none"
-      (click)="selectWindow()"
-      [class.selected]="currentMode === 'window'"
-    >
-      <fa-icon
-        [icon]="['fas', 'square']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Window</ion-text>
-    </ion-item>
-    <ion-item
-      class="background"
-      lines="none"
-      (click)="selectWall()"
-      [class.selected]="currentMode === 'wall'"
-    >
-      <fa-icon
-        [icon]="['far', 'square']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Wall</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none">
-      <fa-icon
-        [icon]="['fas', 'cube']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black" (click)="transformTo3D()"
-        >3D Image</ion-text
-      >
-    </ion-item>
-    <ion-item
-      class="background"
-      lines="none"
-      (click)="selectMode()"
-      [class.selected]="currentMode === null"
-    >
-      <fa-icon
-        [icon]="['fas', 'check']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Select</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none" (click)="deleteMode()">
-      <fa-icon [icon]="['fas', 'x']" class="color-black" slot="start"></fa-icon>
-      <ion-text class="color-black">Delete</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none" (click)="toggleDimentionMode()">
-      <fa-icon
-        [icon]="['fas', getDimensionsIcon()]"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Toggle dimentions</ion-text>
-    </ion-item>
+        <ion-item class="background" lines="none" (click)="selectDoor()" [class.selected]="currentMode === 'door'">
+            <fa-icon [icon]="['fas', 'door-closed']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Door</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="selectWindow()" [class.selected]="currentMode === 'window'">
+            <fa-icon [icon]="['fas', 'square']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Window</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="selectWall()" [class.selected]="currentMode === 'wall'">
+            <fa-icon [icon]="['far', 'square']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Wall</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none">
+            <fa-icon [icon]="['fas', 'cube']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black" (click)="transformTo3D()">3D Image</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="selectMode()" [class.selected]="currentMode === null">
+            <fa-icon [icon]="['fas', 'check']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Select</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="deleteMode()">
+            <fa-icon [icon]="['fas', 'x']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Delete</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="toggleDimentionMode()">
+            <fa-icon [icon]="['fas', getDimensionsIcon()]" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Toggle dimentions</ion-text>
+        </ion-item>
 
-    <ion-item class="background" lines="none" (click)="toggleGridMenu()">
-      <fa-icon
-        [icon]="['fas', getGridIcon()]"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Toggle grid</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none" (click)="savePlan()">
-      <fa-icon
-        [icon]="['fas', 'floppy-disk']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Save plan</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none" (click)="downloadPlan()">
-      <fa-icon
-        [icon]="['fas', 'download']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black">Download plan</ion-text>
-    </ion-item>
-    <ion-item class="background" lines="none">
-      <fa-icon
-        [icon]="['fas', 'square-xmark']"
-        class="color-black"
-        slot="start"
-      ></fa-icon>
-      <ion-text class="color-black" (click)="clearGrid()">Clear Grid</ion-text>
-    </ion-item>
-  </ion-content>
+        <ion-item class="background" lines="none" (click)="toggleGridMenu()">
+            <fa-icon [icon]="['fas', getGridIcon()]" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Toggle grid</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="savePlan()">
+            <fa-icon [icon]="['fas', 'floppy-disk']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Save plan</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none" (click)="downloadPlan()">
+            <fa-icon [icon]="['fas', 'download']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black">Download plan</ion-text>
+        </ion-item>
+        <ion-item class="background" lines="none">
+            <fa-icon [icon]="['fas', 'square-xmark']" class="color-black" slot="start"></fa-icon>
+            <ion-text class="color-black" (click)="clearGrid()">Clear Grid</ion-text>
+        </ion-item>
+    </ion-content>
 </ion-menu>
-<ion-menu
-  side="end"
-  menuId="second-menu"
-  contentId="main-content"
-  swipeGesture="false"
->
-  <ion-content class="ion-padding" class="background">
-    <div class="image-container" class="background">
-      <img src="/assets/second.jpg" alt="Half Image" class="image-containers" />
-    </div>
-    <div class="adjustments color-black">3D adjustments</div>
-    <div class="right-menu-div">
-      <div class="flex">
-        <ion-label class="color-black items">Length Scale Factor</ion-label>
-        <ion-range
-          min="0.5"
-          max="2"
-          class="items half-width-input no-border"
-          step="0.1"
-          [(ngModel)]="lengthScaleFactor"
-          (ionChange)="updateLengthScale()"
-        ></ion-range>
-      </div>
-      <div class="flex">
-        <label class="color-black items">Wall color:</label>
-        <input
-          class="items half-width-input no-border"
-          fill="outline"
-          maxlength="1"
-          type="color"
-          [value]="currentWallColor"
-          (change)="onWallColorChange($event)"
-        />
-      </div>
-      <div class="flex">
-        <label class="color-black items">Door colour:</label>
-        <input
-          class="items half-width-input no-border"
-          fill="outline"
-          maxlength="1"
-          type="color"
-          [value]="currentDoorColor"
-          (change)="onDoorColorChange($event)"
-        />
-      </div>
-      <div class="flex">
-        <label class="color-black items">Window color:</label>
-        <input
-          class="items half-width-input no-border"
-          fill="outline"
-          maxlength="1"
-          type="color"
-          [value]="currentWindowColor"
-          (change)="onWindowColorChange($event)"
-        />
-      </div>
-      <div class="flex">
-        <label class="color-black items">Roof color:</label>
-        <input
-          class="items half-width-input no-border"
-          fill="outline"
-          maxlength="1"
-          type="color"
-          [value]="currentWindowColor"
-          (change)="onRoofColorChange($event)"
-        />
-      </div>
-      <div class="flex">
-        <label class="color-black items" for="wallWidth"
-          >Wall Width (cm):</label
+<ion-menu side="end" menuId="second-menu" contentId="main-content" swipeGesture="false">
+    <ion-content class="ion-padding" class="background">
+        <div class="image-container" class="background">
+            <img src="/assets/second.jpg" alt="Half Image" class="image-containers" />
+        </div>
+        <div class="adjustments color-black">3D adjustments</div>
+        <div class="right-menu-div">
+            <div class="flex">
+                <ion-label class="color-black items">Length Scale Factor</ion-label>
+                <ion-range min="0.5" max="2" class="items half-width-input no-border" step="0.1" [(ngModel)]="lengthScaleFactor" (ionChange)="updateLengthScale()"></ion-range>
+            </div>
+            <div class="flex">
+                <label class="color-black items">Wall color:</label>
+                <input class="items half-width-input no-border" fill="outline" maxlength="1" type="color" [value]="currentWallColor" (change)="onWallColorChange($event)" />
+            </div>
+            <div class="flex">
+                <label class="color-black items">Door colour:</label>
+                <input class="items half-width-input no-border" fill="outline" maxlength="1" type="color" [value]="currentDoorColor" (change)="onDoorColorChange($event)" />
+            </div>
+            <div class="flex">
+                <label class="color-black items">Window color:</label>
+                <input class="items half-width-input no-border" fill="outline" maxlength="1" type="color" [value]="currentWindowColor" (change)="onWindowColorChange($event)" />
+            </div>
+            <div class="flex">
+                <label class="color-black items">Roof color:</label>
+                <input class="items half-width-input no-border" fill="outline" maxlength="1" type="color" [value]="currentRoofColor" (change)="onRoofColorChange($event)" />
+            </div>
+            <div class="flex">
+                <label class="color-black items" for="wallWidth">Wall Width (cm):</label
         >
         <input
           class="items half-width-input"
@@ -292,11 +177,14 @@
 
 <ion-header class="background">
   <ion-toolbar class="background">
-    <ion-buttons slot="start" class="custom-back-button">
-      <ion-back-button
+    <ion-buttons slot="start" class="custom-back-button" (click)="backToHome()">
+      <ion-button
         class="color-black"
-        defaultHref="/home"
-      ></ion-back-button>
+
+      >
+      <ion-icon name="arrow-back" size="large"></ion-icon>
+
+    </ion-button>
     </ion-buttons>
     <ion-buttons slot="end" class="color-black" class="background paddingr">
       <ion-icon
@@ -313,7 +201,9 @@
 <ion-content class="ion-page" id="main-content" class="background">
   <!-- <ion-alert trigger="present-alert" header="Please enter your info" [buttons]="alertButtons" [inputs]="alertInputs"></ion-alert> -->
   <!-- <div #threeContainer></div> -->
-
+  <!-- <div class="ion-padding">
+    <ion-button (click)="drawSquare(segment1)">draw</ion-button>
+  </div> -->
   <div>
     <div #container class="showcontainer"></div>
     <div #threeContainer class="showcontainer2"></div>
@@ -324,7 +214,7 @@
 <ion-footer>
   <ion-toolbar class="fotter-color">
     <ion-buttons slot="start">
-      <ion-button color="primary" (click)="undo()">
+      <ion-button color="primary" (click)="undo()" [disabled]="!canUndo">
         <ion-icon name="arrow-undo-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -338,7 +228,7 @@
       ></ion-textarea>
       <ion-button
         fill="clear"
-        (click)="sendMessage()"
+        (click)="generateContent()"
         [disabled]="!message.trim()"
         class="send-button"
       >
@@ -346,7 +236,7 @@
       </ion-button>
     </div>
     <ion-buttons slot="end">
-      <ion-button color="primary" (click)="redo()">
+      <ion-button color="primary" (click)="redo()" [disabled]="!canRedo">
         <ion-icon name="arrow-redo-outline"></ion-icon>
       </ion-button>
     </ion-buttons>

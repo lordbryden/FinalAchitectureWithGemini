@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class GeminiService {
-  private apiUrl = 'http://localhost:5000/generate'; // URL to Flask API
+  private apiUrl = 'https://pythongemini-3.onrender.com/generate'; // URL to Flask API
   constructor(private http: HttpClient) { }
   generateContent(userInput: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

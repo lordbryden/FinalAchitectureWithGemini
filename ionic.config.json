@@ -1,7 +1,7 @@
 {
-  "name": "NewGemini",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
+    "name": "DreamDesigns",
+    "integrations": {
+        "capacitor": {}
+    },
+    "type": "angular"
 }

@@ -27,7 +27,6 @@ export class AutoDrawService implements OnInit {
   private pixelsPerMeter!: number ;
   private pointMap: Map<string, Point> = new Map();
 
-
   constructor(private drawingService: DrawingService ) {
 
     this.layer = this.drawingService.getLayer();
@@ -38,6 +37,7 @@ export class AutoDrawService implements OnInit {
 
   }
   async drawShape(segments: SimpleSegment[], delayMs: number = 500) {
+    this.drawingService.setAutoDrawingState(true);
     this.calculateAndStorePoints(segments);
     const bounds = this.calculateBounds(Array.from(this.pointMap.values()));
     const offset = this.calculateOffset(bounds);
@@ -54,7 +54,10 @@ export class AutoDrawService implements OnInit {
       await this.drawSegmentFromStored(segment, delayMs);
     }
 
-    this.layer.batchDraw();
+   await this.layer.batchDraw();
+
+
+   this.drawingService.setAutoDrawingState(false);
   }
 
   private calculateAndStorePoints(segments: SimpleSegment[]) {

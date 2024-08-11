@@ -263,25 +263,29 @@ export class HomePage {
   loadSavedDrawings() {
     // Assuming you have a way to get all saved drawing IDs
     Object.keys(localStorage).forEach(key => {
-      console.log(key)
-      const item = localStorage.getItem(key);
-      if (item) {
-        try {
-          const parsedItem = JSON.parse(item);
-          const design: Design = {
-            id: key,
-            title: parsedItem.title || 'Untitled',
-            description: parsedItem.description || 'No description',
-            thumbnail: parsedItem.thumbnail || 'default-thumbnail-url'
-          };
-          this.previousDesigns.push(design);
-        } catch (error) {
-          console.error(`Error parsing item with key "${key}":`, error);
-          console.log('Problematic item:', item);
+      // Skip the key named 'alertKey'
+      if (key !== 'alertShown') {
+        console.log(key);
+        const item = localStorage.getItem(key);
+        if (item) {
+          try {
+            const parsedItem = JSON.parse(item);
+            const design: Design = {
+              id: key,
+              title: parsedItem.title || 'Untitled',
+              description: parsedItem.description || 'No description',
+              thumbnail: parsedItem.thumbnail || 'default-thumbnail-url'
+            };
+            this.previousDesigns.push(design);
+          } catch (error) {
+            console.error(`Error parsing item with key "${key}":`, error);
+            console.log('Problematic item:', item);
+          }
         }
       }
     });
   }
+
 
   async goToDesign(id : any){
 
@@ -290,6 +294,35 @@ export class HomePage {
 
     // }
     this.router.navigate(['/drawing', id]);
+  }
+  performDelete(designId: any) {
+    localStorage.removeItem(designId);
+    this.previousDesigns = this.previousDesigns.filter(design => design.id !== designId);
+
+  }
+  async deleteDesign(designId: string) {
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Delete',
+      message: 'Are you sure you want to delete this design?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            // Do nothing on cancel
+          }
+        }, {
+          text: 'Yes',
+          handler: () => {
+            this.performDelete(designId);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 }

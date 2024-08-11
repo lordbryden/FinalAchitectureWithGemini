@@ -9,6 +9,28 @@ interface ShapeInfo {
   type: 'wall' | 'window' | 'door';
   height?: number;
 }
+interface DragOperation {
+  shapes: Array<{
+    shape: Konva.Shape | Konva.Group,
+    oldPosition: Konva.Vector2d,
+    newPosition: Konva.Vector2d,
+    startCircleOldPosition: Konva.Vector2d | null,
+    endCircleOldPosition: Konva.Vector2d | null,
+    startCircleNewPosition: Konva.Vector2d | null,
+    endCircleNewPosition: Konva.Vector2d | null
+  }>;
+}
+
+interface EditOperation {
+  shape: Konva.Shape | Konva.Group;
+  startCircle: Konva.Circle;
+  endCircle: Konva.Circle;
+  oldStartPosition: Konva.Vector2d;
+  oldEndPosition: Konva.Vector2d;
+  newStartPosition: Konva.Vector2d;
+  newEndPosition: Konva.Vector2d;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +46,7 @@ export class DrawingService {
   private shapes: Array<{ shape: Konva.Shape | Konva.Group, startCircle: Konva.Circle, endCircle: Konva.Circle }> = [];
   private selectionRect: Konva.Rect | null = null;
   private selectedShapes: Set<Konva.Shape | Konva.Group> = new Set();
-  private pixelsPerMeter = 17 ; // Adjust this value based on your needs
+  private pixelsPerMeter = 30 ; // Adjust this value based on your needs
 
   private selectionBoundingRect: Konva.Rect | null = null;
   private dragLayer!: Konva.Layer;
@@ -39,6 +61,12 @@ export class DrawingService {
    private lastDist: number = 0;
    private previousMode: 'wall' | 'window' | 'door' | 'select' | 'adjust' | null = null;
    private selectionStartPos: Konva.Vector2d | null = null;
+
+   private undoStack: Array<{ action: string, data: any  }> = [];
+   private redoStack: Array<{ action: string, data: any }> = [];
+   private readonly MAX_UNDO_STEPS = 30;
+   private dragOperation: DragOperation | null = null;
+   private issAutoDrawing: boolean = false;
 
   constructor() {
     this.layer = new Konva.Layer();
@@ -248,15 +276,23 @@ export class DrawingService {
       const length = Math.sqrt(dx * dx + dy * dy);
 
       if (length > 1) { // Only add shapes with some length
-        const shapeInfo = {
-          shape: this.currentShape,
-          startCircle: this.startCircle,
-          endCircle: this.endCircle
-        };
-        this.shapes.push(shapeInfo);
+        // Ensure that currentMode is of the correct type
+        if (this.currentMode === 'wall' || this.currentMode === 'window' || this.currentMode === 'door') {
+          const shapeInfo: ShapeInfo = {
+            shape: this.currentShape,
+            startCircle: this.startCircle,
+            endCircle: this.endCircle,
+            type: this.currentMode,
+          };
+          this.shapes.push(shapeInfo);
+          this.addToUndoStack('add', shapeInfo);
+          this.redoStack = []; // Clear redo stack when a new action is performed
 
-        // Update measurements for the new shape
-        this.updateMeasurements(this.currentShape, start, end);
+          // Update measurements for the new shape
+          this.updateMeasurements(this.currentShape, start, end);
+        } else {
+          console.error('Invalid shape type:', this.currentMode);
+        }
       } else {
         // If it's just a dot, remove it
         this.currentShape.destroy();
@@ -433,6 +469,7 @@ export class DrawingService {
   }
 
   private createShape(pos: Konva.Vector2d) {
+
     switch (this.currentMode) {
       case 'wall':
         this.currentShape = new Konva.Line({
@@ -491,6 +528,12 @@ export class DrawingService {
       draggable: false
     });
 
+    let dragStartPos: Konva.Vector2d;
+
+    circle.on('dragstart', () => {
+      dragStartPos = circle.position();
+    });
+
     circle.on('dragmove', () => {
       const shapeInfo = this.shapes.find(s => s.startCircle === circle || s.endCircle === circle);
       if (shapeInfo) {
@@ -499,6 +542,24 @@ export class DrawingService {
         this.updateShapeGeometry(shapeInfo.shape, shapeInfo.startCircle.position(), shapeInfo.endCircle.position());
         this.updateMeasurements(shapeInfo.shape, shapeInfo.startCircle.position(), shapeInfo.endCircle.position());
         this.layer.batchDraw();
+      }
+    });
+
+    circle.on('dragend', () => {
+      const shapeInfo = this.shapes.find(s => s.startCircle === circle || s.endCircle === circle);
+      if (shapeInfo) {
+        const isStart = shapeInfo.startCircle === circle;
+        const otherCircle = isStart ? shapeInfo.endCircle : shapeInfo.startCircle;
+        const editOperation: EditOperation = {
+          shape: shapeInfo.shape,
+          startCircle: shapeInfo.startCircle,
+          endCircle: shapeInfo.endCircle,
+          oldStartPosition: isStart ? dragStartPos : otherCircle.position(),
+          oldEndPosition: isStart ? otherCircle.position() : dragStartPos,
+          newStartPosition: shapeInfo.startCircle.position(),
+          newEndPosition: shapeInfo.endCircle.position()
+        };
+        this.addToUndoStack('edit', editOperation);
       }
     });
 
@@ -942,6 +1003,20 @@ export class DrawingService {
       this._isDragging = true;
       this.dragStartPosition = pos;
 
+      this.dragOperation = {
+        shapes: Array.from(this.selectedShapes).map(shape => {
+          const shapeInfo = this.shapes.find(s => s.shape === shape);
+          return {
+            shape,
+            oldPosition: shape.position(),
+            newPosition: shape.position(), // Will be updated in stopDragging
+            startCircleOldPosition: shapeInfo ? shapeInfo.startCircle.position() : null,
+            endCircleOldPosition: shapeInfo ? shapeInfo.endCircle.position() : null,
+            startCircleNewPosition: null, // Will be updated in stopDragging
+            endCircleNewPosition: null // Will be updated in stopDragging
+          };
+        })
+      };
       // Move selected shapes and the selection rectangle to the drag layer
       this.selectedShapes.forEach(shape => {
         shape.moveTo(this.dragLayer);
@@ -1006,7 +1081,18 @@ export class DrawingService {
 
           this.updateMeasurements(shape, shapeInfo.startCircle.position(), shapeInfo.endCircle.position());
         }
-
+        if (this.dragOperation) {
+          this.dragOperation.shapes.forEach(item => {
+            item.newPosition = item.shape.position();
+            const shapeInfo = this.shapes.find(s => s.shape === item.shape);
+            if (shapeInfo) {
+              item.startCircleNewPosition = shapeInfo.startCircle.position();
+              item.endCircleNewPosition = shapeInfo.endCircle.position();
+            }
+          });
+          this.addToUndoStack('drag', this.dragOperation);
+          this.dragOperation = null;
+        }
         const measurementGroup = this.dragLayer.findOne(`#measurement-${shape._id}`) as Konva.Group;
         if (measurementGroup) {
           measurementGroup.moveTo(this.layer);
@@ -1282,5 +1368,308 @@ private getDistance(touch1: Touch, touch2: Touch): number {
   const dx = touch1.clientX - touch2.clientX;
   const dy = touch1.clientY - touch2.clientY;
   return Math.sqrt(dx * dx + dy * dy);
+}
+
+public addToUndoStack(action: string, data: ShapeInfo | DragOperation | EditOperation) {
+  this.undoStack.push({ action, data });
+  if (this.undoStack.length > this.MAX_UNDO_STEPS) {
+    this.undoStack.shift();
+  }
+  this.redoStack = []; // Clear redo stack when a new action is performed
+}
+
+
+private undoAdd(shapeInfo: ShapeInfo) {
+  if (this.shapes.length === 0) {
+    console.log("No shapes to remove");
+    return;
+  }
+  console.log(this.undoStack)
+  const lastShapeInfo = this.shapes[this.shapes.length - 1];
+  const index = this.shapes.length - 1;
+
+  console.log(`Removing shape at index: ${index}`);
+
+  this.shapes.splice(index, 1);
+  lastShapeInfo.shape.destroy();
+  lastShapeInfo.startCircle.destroy();
+  lastShapeInfo.endCircle.destroy();
+
+  // Remove the measurement display
+  const measurementGroup = this.layer.findOne(`#measurement-${lastShapeInfo.shape._id}`) as Konva.Group;
+  if (measurementGroup) {
+    measurementGroup.destroy();
+  }
+
+  // Remove edit operations for this shape
+  this.removeEditOperationsForShape(lastShapeInfo.shape._id);
+
+  this.layer.batchDraw();
+}
+private undo() {
+  if (this.undoStack.length === 0) return;
+
+  const lastAction = this.undoStack.pop();
+  if (lastAction) {
+    switch (lastAction.action) {
+      case 'add':
+        this.undoAdd(lastAction.data as ShapeInfo);
+        break;
+      case 'drag':
+        this.undoDrag(lastAction.data as DragOperation);
+        break;
+      case 'edit':
+        this.undoEdit(lastAction.data as EditOperation);
+        break;
+    }
+    this.redoStack.push(lastAction);
+  }
+}
+
+private redo() {
+  if (this.redoStack.length === 0) return;
+
+  const nextAction = this.redoStack.pop();
+  if (nextAction) {
+    switch (nextAction.action) {
+      case 'add':
+        this.redoAdd(nextAction.data as ShapeInfo);
+        break;
+      case 'drag':
+        this.redoDrag(nextAction.data as DragOperation);
+        break;
+      case 'edit':
+        this.redoEdit(nextAction.data as EditOperation);
+        break;
+    }
+    this.undoStack.push(nextAction);
+    if (this.undoStack.length > this.MAX_UNDO_STEPS) {
+      this.undoStack.shift();
+    }
+  }
+}
+private redoAdd(shapeInfo: ShapeInfo) {
+  if (!shapeInfo) {
+    console.error('ShapeInfo is undefined in redoAdd');
+    return;
+  }
+
+  // Recreate start and end circles
+  const newStartCircle = this.createCircle(shapeInfo.startCircle.position());
+  const newEndCircle = this.createCircle(shapeInfo.endCircle.position());
+
+  // Set the current mode to the shape type
+  this.currentMode = shapeInfo.type;
+
+  // Create the shape
+  let newShape: Konva.Shape | Konva.Group | null = null;
+  const startPos = newStartCircle.position();
+  const endPos = newEndCircle.position();
+
+  switch (shapeInfo.type) {
+    case 'wall':
+      newShape = new Konva.Line({
+        points: [startPos.x, startPos.y, endPos.x, endPos.y],
+        stroke: 'black',
+        strokeWidth: 2,
+      });
+      break;
+    case 'window':
+      newShape = new Konva.Group({
+      });
+      const line1 = new Konva.Line({
+        points: [startPos.x, startPos.y, endPos.x, endPos.y],
+        stroke: 'blue',
+        strokeWidth: 2
+      });
+      const line2 = new Konva.Line({
+        points: [startPos.x, startPos.y, endPos.x, endPos.y],
+        stroke: 'blue',
+        strokeWidth: 2
+      });
+      newShape.add(line1, line2);
+      break;
+    case 'door':
+      newShape = new Konva.Group({
+      });
+      const arc = new Konva.Arc({
+        x: 0,
+        y: 0,
+        innerRadius: 0,
+        outerRadius: 0,
+        angle: 90,
+        fill: '',
+        stroke: 'green',
+        strokeWidth: 2,
+        rotation: 0
+      });
+      const line = new Konva.Line({
+        points: [0, 0, 0, 0],
+        stroke: 'green',
+        strokeWidth: 2
+      });
+      newShape.add(arc, line);
+      newShape.position(startPos);
+      break;
+    default:
+      console.error('Unknown shape type:', shapeInfo.type);
+      return;
+  }
+
+  if (!newShape) {
+    console.error('Failed to create new shape');
+    return;
+  }
+
+  // Update the shape's geometry
+  this.updateShapeGeometry(newShape, startPos, endPos);
+
+  // Add shapes to the layer
+  this.layer.add(newShape);
+  this.layer.add(newStartCircle);
+  this.layer.add(newEndCircle);
+
+  // Create new shapeInfo object
+  const newShapeInfo: ShapeInfo = {
+    shape: newShape,
+    startCircle: newStartCircle,
+    endCircle: newEndCircle,
+    type: shapeInfo.type,
+  };
+
+  // Add to shapes array
+  this.shapes.push(newShapeInfo);
+
+  // Recreate the measurement display
+  this.updateMeasurements(newShape, startPos, endPos);
+
+  // Reset currentMode
+  this.currentMode = null;
+  this.removeEditOperationsForShape(newShape._id);
+
+  this.layer.batchDraw();
+}
+public performRedo() {
+  this.redo();
+}
+public performUndo() {
+  this.undo();
+}
+
+public canUndo(): boolean {
+    return this.undoStack.length > 0;
+  }
+
+  public canRedo(): boolean {
+    return this.redoStack.length > 0;
+  }
+
+  private undoDrag(dragOperation: DragOperation) {
+    dragOperation.shapes.forEach(item => {
+      const shapeInfo = this.shapes.find(s => s.shape === item.shape);
+      if (shapeInfo && item.startCircleOldPosition && item.endCircleOldPosition) {
+        // Update circle positions
+        shapeInfo.startCircle.position(item.startCircleOldPosition);
+        shapeInfo.endCircle.position(item.endCircleOldPosition);
+
+        // Update shape position and geometry
+        if (item.shape instanceof Konva.Line) {
+          // For walls
+          item.shape.points([
+            item.startCircleOldPosition.x, item.startCircleOldPosition.y,
+            item.endCircleOldPosition.x, item.endCircleOldPosition.y
+          ]);
+          item.shape.position({x: 0, y: 0}); // Reset position as points are absolute
+        } else {
+          // For doors and windows
+          item.shape.position(item.oldPosition);
+          this.updateShapeGeometry(item.shape, item.startCircleOldPosition, item.endCircleOldPosition);
+        }
+
+        // Update measurements
+        this.updateMeasurements(item.shape, item.startCircleOldPosition, item.endCircleOldPosition);
+      }
+    });
+    this.updateSelectionRectangle();
+    this.layer.batchDraw();
+  }
+  private redoDrag(dragOperation: DragOperation) {
+    dragOperation.shapes.forEach(item => {
+      const shapeInfo = this.shapes.find(s => s.shape === item.shape);
+      if (shapeInfo && item.startCircleNewPosition && item.endCircleNewPosition) {
+        // Update circle positions
+        shapeInfo.startCircle.position(item.startCircleNewPosition);
+        shapeInfo.endCircle.position(item.endCircleNewPosition);
+
+        // Update shape position and geometry
+        if (item.shape instanceof Konva.Line) {
+          // For walls
+          item.shape.points([
+            item.startCircleNewPosition.x, item.startCircleNewPosition.y,
+            item.endCircleNewPosition.x, item.endCircleNewPosition.y
+          ]);
+          item.shape.position({x: 0, y: 0}); // Reset position as points are absolute
+        } else {
+          // For doors and windows
+          item.shape.position(item.newPosition);
+          this.updateShapeGeometry(item.shape, item.startCircleNewPosition, item.endCircleNewPosition);
+        }
+
+        // Update measurements
+        this.updateMeasurements(item.shape, item.startCircleNewPosition, item.endCircleNewPosition);
+      }
+    });
+    this.updateSelectionRectangle();
+    this.layer.batchDraw();
+  }
+
+
+  private undoEdit(editOperation: EditOperation) {
+  editOperation.startCircle.position(editOperation.oldStartPosition);
+  editOperation.endCircle.position(editOperation.oldEndPosition);
+  this.updateShapeGeometry(editOperation.shape, editOperation.oldStartPosition, editOperation.oldEndPosition);
+  this.updateMeasurements(editOperation.shape, editOperation.oldStartPosition, editOperation.oldEndPosition);
+  this.layer.batchDraw();
+}
+
+private redoEdit(editOperation: EditOperation) {
+  editOperation.startCircle.position(editOperation.newStartPosition);
+  editOperation.endCircle.position(editOperation.newEndPosition);
+  this.updateShapeGeometry(editOperation.shape, editOperation.newStartPosition, editOperation.newEndPosition);
+  this.updateMeasurements(editOperation.shape, editOperation.newStartPosition, editOperation.newEndPosition);
+  this.layer.batchDraw();
+}
+
+private removeEditOperationsForShape(shapeId: any) {
+  this.undoStack = this.undoStack.filter(action =>
+    !(action.action === 'edit' && (action.data as EditOperation).shape._id === shapeId)
+  );
+  this.redoStack = this.redoStack.filter(action =>
+    !(action.action === 'edit' && (action.data as EditOperation).shape._id === shapeId)
+  );
+}
+
+// disableInteractions() {
+//   const stage = this.layer.getStage();
+//   if (stage) {
+//     stage.listening(false);
+//     this.layer.listening(false);
+//   }
+// }
+
+// enableInteractions() {
+//   const stage = this.layer.getStage();
+//   if (stage) {
+//     stage.listening(true);
+//     this.layer.listening(true);
+//   }
+// }
+
+setAutoDrawingState(isAutoDrawing: boolean) {
+  this.issAutoDrawing = isAutoDrawing;
+}
+
+isAutoDrawing(): boolean {
+  return this.issAutoDrawing;
 }
 }

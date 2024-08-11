@@ -1,100 +1,122 @@
 // Global styles
 $overlay-opacity: 0.5;
 $primary-color: #3880ff; // Adjust color as needed
-
 .image-section {
-  position: relative;
-  width: 100%;
-  height: 50vh; // Takes half of the screen height
-
-  img {
+    position: relative;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding-bottom: 60px;
-    background: rgba(0, 0, 0, $overlay-opacity);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-
-    .overlay-content {
-      color: white;
-      padding: 0 20px 0 20px;
-
-      .main-text {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        align-items: center;
-        text-align: center;
-      }
-
-      .sub-text {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        text-align: left;
-      }
+    height: 50vh; // Takes half of the screen height
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
-  }
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding-bottom: 60px;
+        background: rgba(0, 0, 0, $overlay-opacity);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        .overlay-content {
+            color: white;
+            padding: 0 20px 0 20px;
+            .main-text {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+                align-items: center;
+                text-align: center;
+            }
+            .sub-text {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+                text-align: left;
+            }
+        }
+    }
 }
 
 .pre-built-designs,
 .previous-designs {
-  text-align: center;
-  margin-top: 16px;
-
-  h2 {
-    font-weight: bold;
-    text-transform: uppercase;
-    margin: 1rem 0;
-  }
+    text-align: center;
+    margin-top: 16px;
+    h2 {
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 1rem 0;
+    }
 }
 
 .scroll-container {
-  display: flex;
-  // gap: 1rem;
+    display: flex;
+    // gap: 1rem;
 }
 
 .design-card {
-  flex-shrink: 0;
-  padding: 6px;
-  margin-bottom: 15px;
-  display: inline-block;
+    flex-shrink: 0;
+    padding: 6px;
+    margin-bottom: 15px;
+    display: inline-block;
 }
 
 .design-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    .design-card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: auto;
+        // display: inline-block;
+    }
+}
 
-  .design-card {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: auto;
-    // display: inline-block;
-  }
-}
 .background {
-  --background: white;
+    --background: white;
 }
+
 .blackColor {
-  margin-top: 12px;
-  font-weight: bold;
-  color: black;
+    margin-top: 12px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 20px;
 }
+
 .horizontal-scroll-container {
-  overflow-x: auto; /* Enable horizontal scrolling */
-  white-space: nowrap;
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    white-space: nowrap;
 }
+
 .white-text {
-  color: #0a0a0a;
+    color: #0a0a0a;
+}
+
+.design-card {
+    position: relative;
+}
+
+.delete-button {
+    position: absolute;
+    top: -3px;
+    right: 17px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.delete-button ion-icon {
+    font-size: 20px;
 }
