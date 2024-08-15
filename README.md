@@ -7,3 +7,6 @@
   - or open the folder using "ionic cap run android --open" 
 
 
+ # apk to the app present on the root directory
+
+

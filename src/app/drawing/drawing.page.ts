@@ -93,7 +93,25 @@ export class DrawingPage {
 //     ['A23','A24','Window 4','window',1700,0]
 // ];
 
-segment1 = [['A1','A2','External wall 1','wall',13000,0],['A2','A3','External wall 2','wall',11500,90],['A3','A4','External wall 3','wall',13000,180],['A4','A1','External wall 4','wall',11500,270],['A1','A5','Internal wall 1','wall',6500,0],['A5','A6','Internal wall 2','wall',6000,90],['A6','A7','Internal wall 3','wall',6500,180],['A4','A10','Internal wall 4','wall',6500,0],['A10','A9','Internal wall 5','wall',4300,270],['A9','A8','Internal wall 6','wall',6500,180],['A1','A33','Internal wall 7','wall',5000,0],['A33','A34','Internal wall 8','wall',2000,90],['A34','A35','Internal wall 9','wall',5000,180],['A9','A11','Internal wall 10','wall',1600,180],['A11','A12','Internal wall 11','wall',1600,270],['A2','A13','Internal wall 12','wall',4500,180],['A13','A14','Internal wall 13','wall',5200,90],['A14','A15','Internal wall 14','wall',4500,0],['A10','A17','Door 1','door',2300,0],['A9','A11','Door 2','door',1600,180],['A11','A32','Internal wall 15','wall',450,270],['A32','A16','Door 3','door',650,270],['A34','A36','Internal wall 16','wall',450,180],['A36','A37','Door 4','door',1300,180],['A6','A12','Door 5','door',1600,180],['A13','A18','Internal wall 17','wall',1900,90],['A18','A19','Door 6','door',2300,90],['A3','A20','Internal wall 18','wall',800,180],['A20','A21','Window 1','window',2000,180],['A4','A22','Internal wall 19','wall',800,270],['A22','A23','Window 2','window',1600,270],['A8','A24','Internal wall 20','wall',300,270],['A24','A25','Window 3','window',700,270],['A35','A38','Internal wall 21','wall',400,270],['A38','A39','Window 4','window',800,270],['A7','A26','Internal wall 22','wall',800,270],['A26','A27','Window 5','window',2000,270],['A5','A28','Internal wall 23','wall',350,0],['A28','A29','Window 6','window',1000,0],['A2','A30','Internal wall 24','wall',1150,90],['A30','A31','Window 7','window',2300,90]];
+segment1 = [['A1','A2','External wall 1','wall',17000,0],['A2','A3','External wall 2','wall',15000,90],['A3','A4','External wall 3','wall',17000,180],['A4','A1','External wall 4','wall',15000,270],['A2','A5','internal wall 1','wall',6900,180],['A5','A6','internal wall 2','wall',6700,90],['A6','A7','internal wall 3','wall',6900,0],['A3','A10','internal wall 4','wall',6900,180],['A10','A9','internal wall 5','wall',5400,270],['A9','A8','internal wall 6','wall',6900,0],['A9','A11','internal wall 7','wall',2600,0],['A11','A12','internal wall 8','wall',3600,270],['A1','A13','internal wall 9','wall',5000,0],['A13','A14','internal wall 10','wall',5800,90],['A14','A15','internal wall 11','wall',5000,180],['A4','A17','Door 1','door',3500,0],['A9','A11','Door 2','door',1900,0],['A11','A32','internal wall 12','wall',650,270],['A32','A16','Door 3','door',850,270],['A6','A12','Door 4','door',1900,0],['A13','A18','internal wall 13','wall',2900,90],['A18','A19','door 5','door',2100,90],['A10','A20','internal wall 14','wall',1600,180],['A20','A21','Window 1','window',2900,180],['A3','A22','internal wall 15','wall',1600,270],['A22','A23','Window 2','window',2600,270],['A8','A24','internal wall 16','wall',1100,270],['A24','A25','Window 3','window',1200,270],['A7','A26','internal wall 17','wall',2000,270],['A26','A27','Window 4','window',2900,270],['A5','A28','internal wall 18','wall',2000,180],['A28','A29','Window 5','window',2200,180],['A1','A30','internal wall 19','wall',2000,90],['A30','A31','Window 6','window',2900,90]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -136,8 +154,7 @@ segment1 = [['A1','A2','External wall 1','wall',13000,0],['A2','A3','External wa
   drawingTitle: string = '';
   drawingDescription: string = '';
   generatedContent: any = '';
-  public lengthScaleFactor: number = 1.7
-  ;
+  public lengthScaleFactor: number = 2 ;
   private backButtonSubscription!: Subscription;
   private hasChanges: boolean = false;
   message: string = '';
@@ -319,7 +336,6 @@ segment1 = [['A1','A2','External wall 1','wall',13000,0],['A2','A3','External wa
 
     // this.authService.login();
     this.initializeStage();
-    // this.drawSquare(this.segment1)
     this.gridService.createGrid(this.stage);
     this.drawingService.setStage(this.stage);
     this.setupEventListeners();
@@ -357,6 +373,7 @@ segment1 = [['A1','A2','External wall 1','wall',13000,0],['A2','A3','External wa
         this.backToHome();
       });
       this.showInitialAlert();
+      // this.drawSquare(this.segment1)
       // this.drawSquare(this.segment1)
 
   }
@@ -704,7 +721,6 @@ segment1 = [['A1','A2','External wall 1','wall',13000,0],['A2','A3','External wa
   }
 
   async drawSquare(segment: any) {
-    // Draw a square starting at (100, 100) with side length 200
 
     await this.drawingService.clearAllDrawings();
     this.disableBackButton();
